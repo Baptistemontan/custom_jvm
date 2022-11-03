@@ -1,0 +1,299 @@
+ClassFile {
+    magic: 3405691582,
+    minor_version: 0,
+    major_version: 58,
+    this_class: 8,
+    super_class: 2,
+    constant_pool: ConstantPool {
+        infos: [
+            MethodRef { // 1
+                class_index: 2,
+                name_and_type_index: 3,
+            },
+            Class { // 2
+                name_index: 4,
+            },
+            NameAndType { // 3
+                name_index: 5,
+                descriptor_index: 6,
+            },
+            Utf8( // 4
+                "java/lang/Object",
+            ),
+            Utf8( // 5
+                "<init>",
+            ),
+            Utf8( // 6
+                "()V",
+            ),
+            FieldRef { // 7
+                class_index: 8,
+                name_and_type_index: 9,
+            },
+            Class { // 8
+                name_index: 10,
+            },
+            NameAndType { // 9
+                name_index: 11,
+                descriptor_index: 12,
+            },
+            Utf8( // 10
+                "HelloWorld",
+            ),
+            Utf8( // 11
+                "test",
+            ),
+            Utf8( // 12
+                "Ljava/lang/String;",
+            ),
+            FieldRef { // 13
+                class_index: 14,
+                name_and_type_index: 15,
+            },
+            Class { // 14
+                name_index: 16,
+            },
+            NameAndType { // 15
+                name_index: 17,
+                descriptor_index: 18,
+            },
+            Utf8( // 16
+                "java/lang/System",
+            ),
+            Utf8( // 17
+                "out",
+            ),
+            Utf8( // 18
+                "Ljava/io/PrintStream;",
+            ),
+            String { // 19
+                string_index: 20,
+            },
+            Utf8( // 20
+                "Hello, World.",
+            ),
+            MethodRef { // 21
+                class_index: 22,
+                name_and_type_index: 23,
+            },
+            Class { // 22
+                name_index: 24,
+            },
+            NameAndType { // 23
+                name_index: 25,
+                descriptor_index: 26,
+            },
+            Utf8( // 24
+                "java/io/PrintStream",
+            ),
+            Utf8( // 25
+                "println",
+            ),
+            Utf8( // 26
+                "(Ljava/lang/String;)V",
+            ),
+            FieldRef { // 27
+                class_index: 8,
+                name_and_type_index: 28,
+            },
+            NameAndType { // 28
+                name_index: 29,
+                descriptor_index: 30,
+            },
+            Utf8( // 29
+                "i",
+            ),
+            Utf8( // 30
+                "I",
+            ),
+            Utf8( // 31
+                "Code",
+            ),
+            Utf8( // 32
+                "LineNumberTable",
+            ),
+            Utf8( // 33
+                "main",
+            ),
+            Utf8( // 34
+                "([Ljava/lang/String;)V",
+            ),
+            Utf8( // 35
+                "<clinit>",
+            ),
+            Utf8( // 36
+                "SourceFile",
+            ),
+            Utf8( // 37
+                "HelloWorld.java",
+            ),
+        ],
+    },
+    acces_flag: AccesFlag(
+        32,
+    ),
+    interfaces: Interfaces {
+        interfaces: [],
+    },
+    fields: Fields {
+        fields: [
+            FieldInfo {
+                access_flags: 0,
+                name_index: 11,
+                descriptor_index: 12,
+                attributes: [],
+            },
+            FieldInfo {
+                access_flags: 8,
+                name_index: 29,
+                descriptor_index: 30,
+                attributes: [],
+            },
+        ],
+    },
+    methods: Methods {
+        methods: [
+            MethodInfo {
+                access_flags: 0,
+                name_index: 5,
+                descriptor_index: 6,
+                attributes: [
+                    AttributeInfo {
+                        attribute_name_index: 31,
+                        attribute: Code(
+                            CodeAttribute {
+                                max_stack: 2,
+                                max_locals: 1,
+                                code: [
+                                    42, // aload_0
+                                    183, // invokespecial
+                                    0, 1, // Object<init>
+                                    42, // aload_0
+                                    1, // aconst_null
+                                    181, // pufield
+                                    0, 7, // test field
+                                    177, // ret
+                                ],
+                                exception_table: [],
+                                attributes: [
+                                    AttributeInfo {
+                                        attribute_name_index: 32,
+                                        attribute: LineNumberTable(
+                                            LineNumberTableAttribute {
+                                                infos: [
+                                                    LineNumberTableInfo {
+                                                        start_pc: 0,
+                                                        line_number: 1,
+                                                    },
+                                                    LineNumberTableInfo {
+                                                        start_pc: 4,
+                                                        line_number: 3,
+                                                    },
+                                                ],
+                                            },
+                                        ),
+                                    },
+                                ],
+                            },
+                        ),
+                    },
+                ],
+            },
+            MethodInfo {
+                access_flags: 9,
+                name_index: 33,
+                descriptor_index: 34,
+                attributes: [
+                    AttributeInfo {
+                        attribute_name_index: 31,
+                        attribute: Code(
+                            CodeAttribute {
+                                max_stack: 2,
+                                max_locals: 1,
+                                code: [
+                                    178, // getstatic
+                                    0, 13, // System.out
+                                    18, // ldc
+                                    19, // "HelloWorld"
+                                    182, // invokespecial
+                                    0, 21, // out.println
+                                    177, // ret
+                                ],
+                                exception_table: [],
+                                attributes: [
+                                    AttributeInfo {
+                                        attribute_name_index: 32,
+                                        attribute: LineNumberTable(
+                                            LineNumberTableAttribute {
+                                                infos: [
+                                                    LineNumberTableInfo {
+                                                        start_pc: 0,
+                                                        line_number: 9,
+                                                    },
+                                                    LineNumberTableInfo {
+                                                        start_pc: 8,
+                                                        line_number: 10,
+                                                    },
+                                                ],
+                                            },
+                                        ),
+                                    },
+                                ],
+                            },
+                        ),
+                    },
+                ],
+            },
+            MethodInfo {
+                access_flags: 8,
+                name_index: 35,
+                descriptor_index: 6,
+                attributes: [
+                    AttributeInfo {
+                        attribute_name_index: 31,
+                        attribute: Code(
+                            CodeAttribute {
+                                max_stack: 1,
+                                max_locals: 0,
+                                code: [
+                                    3, // iconst_0
+                                    179, // putstatic
+                                    0, 27, //  static i
+                                    177, // ret
+                                ],
+                                exception_table: [],
+                                attributes: [
+                                    AttributeInfo {
+                                        attribute_name_index: 32,
+                                        attribute: LineNumberTable(
+                                            LineNumberTableAttribute {
+                                                infos: [
+                                                    LineNumberTableInfo {
+                                                        start_pc: 0,
+                                                        line_number: 5,
+                                                    },
+                                                ],
+                                            },
+                                        ),
+                                    },
+                                ],
+                            },
+                        ),
+                    },
+                ],
+            },
+        ],
+    },
+    attributes: Attributes {
+        attributes: [
+            AttributeInfo {
+                attribute_name_index: 36,
+                attribute: SourceFile(
+                    SourceFileAttribute {
+                        source_file_index: 37,
+                    },
+                ),
+            },
+        ],
+    },
+}

@@ -1,0 +1,209 @@
+ClassFile {
+    magic: 3405691582,
+    minor_version: 0,
+    major_version: 58,
+    this_class: 21,
+    super_class: 2,
+    constant_pool: ConstantPool {
+        infos: [
+            MethodRef { // 1
+                class_index: 2,
+                name_and_type_index: 3,
+            },
+            Class { // 2
+                name_index: 4,
+            },
+            NameAndType { // 3
+                name_index: 5,
+                descriptor_index: 6,
+            },
+            Utf8( // 4
+                "java/lang/Object",
+            ),
+            Utf8( // 5
+                "<init>",
+            ),
+            Utf8( // 6
+                "()V",
+            ),
+            FieldRef { // 7
+                class_index: 8,
+                name_and_type_index: 9,
+            },
+            Class { // 8
+                name_index: 10,
+            },
+            NameAndType { // 9
+                name_index: 11,
+                descriptor_index: 12,
+            },
+            Utf8( // 10
+                "java/lang/System",
+            ),
+            Utf8( // 11
+                "out",
+            ),
+            Utf8( // 12
+                "Ljava/io/PrintStream;",
+            ),
+            String { // 13
+                string_index: 14,
+            },
+            Utf8( // 14
+                "Hello, World.",
+            ),
+            MethodRef { // 15
+                class_index: 16,
+                name_and_type_index: 17,
+            },
+            Class { // 16
+                name_index: 18,
+            },
+            NameAndType { // 17
+                name_index: 19,
+                descriptor_index: 20,
+            },
+            Utf8( // 18
+                "java/io/PrintStream",
+            ),
+            Utf8( // 19
+                "println",
+            ),
+            Utf8( // 20
+                "(Ljava/lang/String;)V",
+            ),
+            Class { // 21
+                name_index: 22,
+            },
+            Utf8( // 22
+                "HelloWorld",
+            ),
+            Utf8( // 23
+                "Code",
+            ),
+            Utf8( // 24
+                "LineNumberTable",
+            ),
+            Utf8( // 25
+                "main",
+            ),
+            Utf8( // 26
+                "([Ljava/lang/String;)V",
+            ),
+            Utf8( // 27 
+                "SourceFile",
+            ),
+            Utf8( // 28
+                "HelloWorld.java",
+            ),
+        ],
+    },
+    acces_flag: AccesFlag(
+        32,
+    ),
+    interfaces: Interfaces {
+        interfaces: [],
+    },
+    fields: Fields {
+        fields: [],
+    },
+    methods: Methods {
+        methods: [
+            MethodInfo {
+                access_flags: 0,
+                name_index: 5,
+                descriptor_index: 6,
+                attributes: [
+                    AttributeInfo {
+                        attribute_name_index: 23,
+                        attribute: Code(
+                            CodeAttribute {
+                                max_stack: 1,
+                                max_locals: 1,
+                                code: [
+                                    42, // aload_0
+                                    183, // invokespecial
+                                    0, 1, // Object<init>
+                                    177, // ret
+                                ],
+                                exception_table: [],
+                                attributes: [
+                                    AttributeInfo {
+                                        attribute_name_index: 24,
+                                        attribute: LineNumberTable(
+                                            LineNumberTableAttribute {
+                                                infos: [
+                                                    LineNumberTableInfo {
+                                                        start_pc: 0,
+                                                        line_number: 1,
+                                                    },
+                                                ],
+                                            },
+                                        ),
+                                    },
+                                ],
+                            },
+                        ),
+                    },
+                ],
+            },
+            MethodInfo {
+                access_flags: 9,
+                name_index: 25,
+                descriptor_index: 26,
+                attributes: [
+                    AttributeInfo {
+                        attribute_name_index: 23,
+                        attribute: Code(
+                            CodeAttribute {
+                                max_stack: 2,
+                                max_locals: 1,
+                                code: [
+                                    178, // getstatic
+                                    0, 7, // Sytem.out
+                                    18, // ldc
+                                    13, // "HelloWorld"
+                                    182, // invokespecial 
+                                    0, 15, // println
+                                    177, // ret
+                                ],
+                                exception_table: [],
+                                attributes: [
+                                    AttributeInfo {
+                                        attribute_name_index: 24,
+                                        attribute: LineNumberTable(
+                                            LineNumberTableAttribute {
+                                                infos: [
+                                                    LineNumberTableInfo {
+                                                        start_pc: 0,
+                                                        line_number: 5,
+                                                    },
+                                                    LineNumberTableInfo {
+                                                        start_pc: 8,
+                                                        line_number: 6,
+                                                    },
+                                                ],
+                                            },
+                                        ),
+                                    },
+                                ],
+                            },
+                        ),
+                    },
+                ],
+            },
+        ],
+    },
+    attributes: Attributes {
+        attributes: [
+            AttributeInfo {
+                attribute_name_index: 27,
+                attribute: SourceFile(
+                    SourceFileAttribute {
+                        source_file_index: 28,
+                    },
+                ),
+            },
+        ],
+    },
+}
