@@ -240,7 +240,7 @@ pub enum OpCode {
     sipush(i32),                 // 0x11
     swap,                        // 0x5f
     tableswitch(TableSwitch),    // 0xaa
-    wide,                        // 0xc4 | TODO
+    wide(Wide),                  // 0xc4
 }
 
 fn parse_u2_index_offset<I>(bytes: &mut I, current_line: usize) -> Result<usize, ParseError>
@@ -656,7 +656,10 @@ where
             let table_switch = parse_tableswitch(bytes, current_line)?;
             tableswitch(table_switch)
         }
-        0xc4 => todo!(), // wide
+        0xc4 => {
+            let w = parse_wide(bytes)?;
+            wide(w)
+        }
         _ => unimplemented!(),
     };
 
@@ -861,4 +864,51 @@ fn correct_tableswitch_jumps(
     }
 
     Ok(())
+}
+
+// wide
+
+#[derive(Debug, Clone)]
+#[allow(non_camel_case_types)]
+pub enum Wide {
+    iload(usize),
+    fload(usize),
+    aload(usize),
+    lload(usize),
+    dload(usize),
+    istore(usize),
+    fstore(usize),
+    astore(usize),
+    lstore(usize),
+    dstore(usize),
+    ret(usize),
+    iinc(usize, i32),
+}
+
+fn parse_wide<I>(bytes: &mut I) -> Result<Wide, ParseError>
+where
+    I: Iterator<Item = FileByte>,
+{
+    use Wide::*;
+    let tag = pop1(bytes)?;
+    let index = pop_u2_as_index(bytes)?;
+    match tag {
+        0x19 => Ok(aload(index)),  // aload
+        0x18 => Ok(dload(index)),  // dload
+        0x17 => Ok(fload(index)),  // fload
+        0x15 => Ok(iload(index)),  // iload
+        0x16 => Ok(lload(index)),  // lload
+        0x3a => Ok(astore(index)), // astore
+        0x39 => Ok(dstore(index)), // dstore
+        0x38 => Ok(fstore(index)), // fstore
+        0x36 => Ok(istore(index)), // istore
+        0x37 => Ok(lstore(index)), // lstore
+        0xa9 => Ok(ret(index)),    // ret
+        0x84 => {
+            let delta_bits = utils::pop2(bytes)?;
+            let delta = i16::from_be_bytes(delta_bits).into();
+            Ok(iinc(index, delta))
+        }
+        _ => Err(ParseError::InvalidWideOpCode),
+    }
 }

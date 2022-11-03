@@ -14,6 +14,7 @@ pub enum ParseError {
         pool_size: usize,
     },
     InvalidOpCode,
+    InvalidWideOpCode,
     InvalidMethodHandleKind(u8),
 }
 
