@@ -123,8 +123,8 @@ pub enum OpCode {
     fsub,                        // 0x66
     getfield(usize),             // 0xb4
     getstatic(usize),            // 0xb2
-    goto(usize),                 // 0xa7 | TODO
-    goto_w(usize),               // 0xc8 | TODO
+    goto(usize),                 // 0xa7
+    goto_w(usize),               // 0xc8
     i2b,                         // 0x91
     i2c,                         // 0x92
     i2d,                         // 0x87
@@ -143,22 +143,22 @@ pub enum OpCode {
     iconst_4,                    // 0x07
     iconst_5,                    // 0x08
     idiv,                        // 0x6c
-    if_acmpeq(usize),            // 0xa5 | TODO
-    if_acmpne(usize),            // 0xa6 | TODO
-    if_icmpeq(usize),            // 0x9f | TODO
-    if_icmpne(usize),            // 0xa0 | TODO
-    if_icmplt(usize),            // 0xa1 | TODO
-    if_icmpge(usize),            // 0xa2 | TODO
-    if_icmpgt(usize),            // 0xa3 | TODO
-    if_icmple(usize),            // 0xa4 | TODO
-    ifeq(usize),                 // 0x99 | TODO
-    ifne(usize),                 // 0x9a | TODO
-    iflt(usize),                 // 0x9b | TODO
-    ifge(usize),                 // 0x9c | TODO
-    ifgt(usize),                 // 0x9d | TODO
-    ifle(usize),                 // 0x9e | TODO
-    ifnonnull(usize),            // 0xc7 | TODO
-    ifnull(usize),               // 0xc6 | TODO
+    if_acmpeq(usize),            // 0xa5
+    if_acmpne(usize),            // 0xa6
+    if_icmpeq(usize),            // 0x9f
+    if_icmpne(usize),            // 0xa0
+    if_icmplt(usize),            // 0xa1
+    if_icmpge(usize),            // 0xa2
+    if_icmpgt(usize),            // 0xa3
+    if_icmple(usize),            // 0xa4
+    ifeq(usize),                 // 0x99
+    ifne(usize),                 // 0x9a
+    iflt(usize),                 // 0x9b
+    ifge(usize),                 // 0x9c
+    ifgt(usize),                 // 0x9d
+    ifle(usize),                 // 0x9e
+    ifnonnull(usize),            // 0xc7
+    ifnull(usize),               // 0xc6
     iinc(usize, i32),            // 0x84
     iload(usize),                // 0x15
     iload_0,                     // 0x1a
@@ -186,8 +186,8 @@ pub enum OpCode {
     isub,                        // 0x64
     iushr,                       // 0x7c
     ixor,                        // 0x82
-    jsr(usize),                  // 0xa8 | TODO
-    jsr_w(usize),                // 0xc9 | TODO
+    jsr(usize),                  // 0xa8
+    jsr_w(usize),                // 0xc9
     l2d,                         // 0x8a
     l2f,                         // 0x89
     l2i,                         // 0x88
@@ -233,7 +233,7 @@ pub enum OpCode {
     pop2,                        // 0x58
     putfield(usize),             // 0xb5
     putstatic(usize),            // 0xb3
-    ret(usize),                  // 0xa9 | TODO
+    ret(usize),                  // 0xa9
     retrn,                       // 0xb1 | return
     saload,                      // 0x35
     sastore,                     // 0x56
