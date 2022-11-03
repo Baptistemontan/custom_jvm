@@ -239,7 +239,7 @@ pub enum OpCode {
     sastore,                     // 0x56
     sipush(i32),                 // 0x11
     swap,                        // 0x5f
-    tableswitch,                 // 0xaa | TODO
+    tableswitch(TableSwitch),    // 0xaa
     wide,                        // 0xc4 | TODO
 }
 
@@ -593,7 +593,7 @@ where
         0xab => {
             let lookup_switch = parse_lookupswitch(bytes, current_line)?;
             lookupswitch(lookup_switch)
-        } // lookupswitch
+        }
         0x81 => lor,
         0x71 => lrem,
         0xad => lreturn,
@@ -652,7 +652,10 @@ where
             sipush(short)
         }
         0x5f => swap,
-        0xaa => todo!(), // tableswitch
+        0xaa => {
+            let table_switch = parse_tableswitch(bytes, current_line)?;
+            tableswitch(table_switch)
+        }
         0xc4 => todo!(), // wide
         _ => unimplemented!(),
     };
@@ -677,6 +680,9 @@ where
     let mut current_opcode_line = 0;
 
     let mut opcodes = Vec::new();
+
+    // TODO: bench if array and do a binary search is not faster
+    // pushing the lines one by one will have the array already sorted
     let mut jump_table = HashMap::new();
 
     while bytes.peek().is_some() {
@@ -730,6 +736,7 @@ where
             | OpCode::ifnull(line)
             | OpCode::jsr_w(line) => update_jump(line, jump_table)?,
             OpCode::lookupswitch(lus) => correct_lookupswitch_jumps(lus, jump_table)?,
+            OpCode::tableswitch(ts) => correct_tableswitch_jumps(ts, jump_table)?,
             _ => {}
         }
     }
@@ -793,6 +800,64 @@ fn correct_lookupswitch_jumps(
 
     for pair in pairs {
         update_jump(&mut pair.jump, jump_table)?;
+    }
+
+    Ok(())
+}
+
+// tableswitch
+#[derive(Debug, Clone)]
+pub struct TableSwitch {
+    default: usize,
+    low: i32,
+    high: i32,
+    jumps: Vec<usize>,
+}
+
+fn parse_tableswitch<I>(bytes: &mut I, current_line: usize) -> Result<TableSwitch, ParseError>
+where
+    I: Iterator<Item = FileByte>,
+{
+    let padding = 4 - ((current_line + 1) % 4);
+
+    skip_n(bytes, padding)?;
+    let default = parse_u4_index_offset(bytes, current_line)?;
+    let low_bits = pop4(bytes)?;
+    let low = i32::from_be_bytes(low_bits);
+    let high_bits = pop4(bytes)?;
+    let high = i32::from_be_bytes(high_bits);
+
+    if low > high {
+        todo!()
+    }
+
+    let jumps_count = (high - low + 1) as usize; // always positive, low <= high
+
+    let mut jumps = Vec::with_capacity(jumps_count);
+
+    for _ in 0..jumps_count {
+        let target_line = parse_u4_index_offset(bytes, current_line)?;
+        jumps.push(target_line);
+    }
+
+    Ok(TableSwitch {
+        default,
+        low,
+        high,
+        jumps,
+    })
+}
+
+fn correct_tableswitch_jumps(
+    ts: &mut TableSwitch,
+    jump_table: &HashMap<usize, usize>,
+) -> Result<(), ParseError> {
+    let TableSwitch { default, jumps, .. } = ts;
+
+    update_jump(default, jump_table)?;
+
+    for target_line in jumps {
+        update_jump(target_line, jump_table)?;
     }
 
     Ok(())
