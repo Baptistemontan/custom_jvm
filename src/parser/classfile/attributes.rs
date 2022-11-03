@@ -9,24 +9,22 @@ use super::{
 pub enum Attribute {
     ConstantValue(ConstantValueAttribute),
     Code(CodeAttribute),
-    LineNumberTable(LineNumberTableAttribute),
+    StackMapTable,       // TODO
+    BootStrapMethod,     // TODO
+    NestHost,            // TODO
+    NestMembers,         // TODO
+    PermittedSubclasses, // TODO
+    Exceptions,          // TODO
+    InnerClasses,        // TODO
+    EnclosingMethod,     // TODO
+    Synthetic,           // TODO
+    Signature,           // TODO
+    Record,              // TODO
     SourceFile(SourceFileAttribute),
-    StackMapTable,                        // TODO
-    Exceptions,                           // TODO
-    BootStrapMethod,                      // TODO
-    InnerClasses,                         // TODO
-    EnclosingMethod,                      // TODO
-    Synthetic,                            // TODO
-    Signature,                            // TODO
-    RuntimeVisibleAnnotations,            // TODO
-    RuntimeInvisibleAnnotations,          // TODO
-    RuntimeVisibleParameterAnnotations,   // TODO
-    RuntimeInvisibleParameterAnnotations, // TODO
-    RuntimeVisibleTypeAnnotations,        // TODO
-    RuntimeInvisibleTypeAnnotations,      // TODO
-    AnnotationDefault,                    // TODO
-    MethodParameters,                     // TODO
-
+    LineNumberTable(LineNumberTableAttribute),
+    LocalVariableTable,     // TODO
+    LocalVariableTypeTable, // TODO
+    // other attributes but not critical (see specs 4.7.3)
     Unknown,
 }
 
@@ -68,6 +66,9 @@ where
         "LineNumberTable" => Attribute::LineNumberTable(parse_line_number_table_attribute(bytes)?),
         "SourceFile" => Attribute::SourceFile(parse_source_file_attribute(bytes)?),
         _ => {
+            // silently ignore unknown attributes
+
+            // still need to skip the bytes
             if bytes.take(attribute_len).count() != attribute_len {
                 return Err(ParseError::EndOfStream);
             }
