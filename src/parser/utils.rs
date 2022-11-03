@@ -124,3 +124,14 @@ where
     let offset = i32::from_be_bytes(bits);
     Ok(offset)
 }
+
+pub fn skip_n<I>(bytes: &mut I, n: usize) -> Result<(), ParseError>
+where
+    I: Iterator<Item = FileByte>,
+{
+    if bytes.take(n).count() != n {
+        Err(ParseError::EndOfStream)
+    } else {
+        Ok(())
+    }
+}
