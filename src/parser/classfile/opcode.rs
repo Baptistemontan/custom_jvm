@@ -831,7 +831,7 @@ where
     let high = i32::from_be_bytes(high_bits);
 
     if low > high {
-        todo!()
+        return Err(ParseError::InvalidTableSwitchBounds);
     }
 
     let jumps_count = (high - low + 1) as usize; // always positive, low <= high

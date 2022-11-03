@@ -13,6 +13,7 @@ pub enum ParseError {
         target_index: usize,
         pool_size: usize,
     },
+    InvalidTableSwitchBounds,
     InvalidOpCode,
     InvalidWideOpCode,
     InvalidMethodHandleKind(u8),
