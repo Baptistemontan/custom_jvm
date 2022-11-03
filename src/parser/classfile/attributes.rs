@@ -25,7 +25,7 @@ pub enum Attribute {
     LocalVariableTable,     // TODO
     LocalVariableTypeTable, // TODO
     // other attributes but not critical (see specs 4.7.3)
-    Unknown,
+    Unknown(String), // TODO: String for debug pupose, remove after
 }
 
 #[derive(Debug, Clone)]
@@ -72,7 +72,7 @@ where
             if bytes.take(attribute_len).count() != attribute_len {
                 return Err(ParseError::EndOfStream);
             }
-            Attribute::Unknown
+            Attribute::Unknown(name.to_string())
         }
     };
 
