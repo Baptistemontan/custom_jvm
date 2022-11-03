@@ -2,7 +2,7 @@ use std::{cell::RefCell, collections::HashMap};
 
 use crate::parser::utils::{
     self, pop1, pop_u1_as_index, pop_u2_as_index, pop_u2_as_offset, pop_u4_as_index,
-    pop_u4_as_offset, FileByte, ParseError,
+    pop_u4_as_offset, FileByte, ParseError, skip_n, pop4,
 };
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -36,7 +36,7 @@ impl TryFrom<u8> for ArrayType {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone)]
 #[allow(non_camel_case_types)]
 pub enum OpCode {
     aaload,                      // 0x32
@@ -209,7 +209,7 @@ pub enum OpCode {
     lload_3,                     // 0x21
     lmul,                        // 0x69
     lneg,                        // 0x75
-    lookupswitch,                // 0xab | TODO
+    lookupswitch(LookupSwitch),  // 0xab
     lor,                         // 0x81
     lrem,                        // 0x71
     lreturn,                     // 0xad
@@ -590,7 +590,10 @@ where
         0x21 => lload_3,
         0x69 => lmul,
         0x75 => lneg,
-        0xab => todo!(), // lookupswitch
+        0xab => {
+            let lookup_switch = parse_lookupswitch(bytes, current_line)?;
+            lookupswitch(lookup_switch)
+        }, // lookupswitch
         0x81 => lor,
         0x71 => lrem,
         0xad => lreturn,
@@ -690,6 +693,14 @@ where
     Ok(opcodes)
 }
 
+fn update_jump(line: &mut usize, jump_table: &HashMap<usize, usize>) -> Result<(), ParseError> {
+    let vec_index = jump_table
+        .get(line)
+        .ok_or(ParseError::InvalidOpcodeJumpIndex)?;
+    *line = *vec_index;
+    Ok(())
+}
+
 fn correct_jump_instructions<'a, I>(
     opcodes: I,
     jump_table: &HashMap<usize, usize>,
@@ -697,13 +708,7 @@ fn correct_jump_instructions<'a, I>(
 where
     I: IntoIterator<Item = &'a mut OpCode>,
 {
-    fn update_line(line: &mut usize, jump_table: &HashMap<usize, usize>) -> Result<(), ParseError> {
-        let vec_index = jump_table
-            .get(line)
-            .ok_or(ParseError::InvalidOpcodeJumpIndex)?;
-        *line = *vec_index;
-        Ok(())
-    }
+    
     for opcode in opcodes {
         match opcode {
             OpCode::goto(line)
@@ -724,9 +729,78 @@ where
             | OpCode::ifle(line)
             | OpCode::ifnonnull(line)
             | OpCode::ifnull(line)
-            | OpCode::jsr_w(line) => update_line(line, jump_table)?,
+            | OpCode::jsr_w(line) => update_jump(line, jump_table)?,
+            OpCode::lookupswitch(lus) => correct_lookupswitch_jumps(lus, jump_table)?,
             _ => {}
         }
+    }
+
+    Ok(())
+}
+
+// lookupswitch
+
+#[derive(Debug, Clone)]
+pub struct LookupSwitch {
+    default: usize,
+    pairs: Vec<LookupSwitchPair>
+}
+
+#[derive(Debug, Clone)]
+pub struct LookupSwitchPair {
+    value: i32,
+    jump: usize
+}
+
+fn parse_lookupswitch<I>(bytes: &mut I, current_line: usize) -> Result<LookupSwitch, ParseError>
+where
+    I: Iterator<Item = FileByte>,
+{
+    println!("parsing lookupswitch at line {}", current_line);
+
+    let padding = 4 - ((current_line + 1) % 4);
+
+    println!("skipping {padding} bytes");
+
+    skip_n(bytes, padding)?;
+    let default = parse_u4_index_offset(bytes, current_line)?;
+    let npairs = pop_u4_as_index(bytes)?;
+    let mut pairs = Vec::with_capacity(npairs);
+
+    println!("default: {default}");
+    println!("npairs: {npairs}");
+
+    for _ in 0..npairs {
+        let pair = parse_lookupswitch_pair(bytes, current_line)?;
+        pairs.push(pair);
+    }
+
+    Ok(LookupSwitch { default, pairs })
+}
+
+fn parse_lookupswitch_pair<I>(bytes: &mut I, current_line: usize) -> Result<LookupSwitchPair, ParseError>
+where
+    I: Iterator<Item = FileByte>,
+{
+    let value_bits = pop4(bytes)?;
+    let value = i32::from_be_bytes(value_bits);
+    let jump = parse_u4_index_offset(bytes, current_line)?;
+
+    Ok(LookupSwitchPair {
+        value,
+        jump
+    })
+}
+
+fn correct_lookupswitch_jumps(lus: &mut LookupSwitch, jump_table: &HashMap<usize, usize>) -> Result<(), ParseError> {
+    let LookupSwitch {
+        default,
+        pairs
+    } = lus;
+    update_jump(default, jump_table)?;
+
+    for pair in pairs {
+        update_jump(&mut pair.jump, jump_table)?;
     }
 
     Ok(())
