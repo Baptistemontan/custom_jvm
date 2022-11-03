@@ -1,8 +1,8 @@
 use std::{cell::RefCell, collections::HashMap};
 
 use crate::parser::utils::{
-    self, pop1, pop_u1_as_index, pop_u2_as_index, pop_u2_as_offset, pop_u4_as_index,
-    pop_u4_as_offset, FileByte, ParseError, skip_n, pop4,
+    self, pop1, pop4, pop_u1_as_index, pop_u2_as_index, pop_u2_as_offset, pop_u4_as_index,
+    pop_u4_as_offset, skip_n, FileByte, ParseError,
 };
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -593,7 +593,7 @@ where
         0xab => {
             let lookup_switch = parse_lookupswitch(bytes, current_line)?;
             lookupswitch(lookup_switch)
-        }, // lookupswitch
+        } // lookupswitch
         0x81 => lor,
         0x71 => lrem,
         0xad => lreturn,
@@ -708,7 +708,6 @@ fn correct_jump_instructions<'a, I>(
 where
     I: IntoIterator<Item = &'a mut OpCode>,
 {
-    
     for opcode in opcodes {
         match opcode {
             OpCode::goto(line)
@@ -743,32 +742,25 @@ where
 #[derive(Debug, Clone)]
 pub struct LookupSwitch {
     default: usize,
-    pairs: Vec<LookupSwitchPair>
+    pairs: Vec<LookupSwitchPair>,
 }
 
 #[derive(Debug, Clone)]
 pub struct LookupSwitchPair {
     value: i32,
-    jump: usize
+    jump: usize,
 }
 
 fn parse_lookupswitch<I>(bytes: &mut I, current_line: usize) -> Result<LookupSwitch, ParseError>
 where
     I: Iterator<Item = FileByte>,
 {
-    println!("parsing lookupswitch at line {}", current_line);
-
     let padding = 4 - ((current_line + 1) % 4);
-
-    println!("skipping {padding} bytes");
 
     skip_n(bytes, padding)?;
     let default = parse_u4_index_offset(bytes, current_line)?;
     let npairs = pop_u4_as_index(bytes)?;
     let mut pairs = Vec::with_capacity(npairs);
-
-    println!("default: {default}");
-    println!("npairs: {npairs}");
 
     for _ in 0..npairs {
         let pair = parse_lookupswitch_pair(bytes, current_line)?;
@@ -778,7 +770,10 @@ where
     Ok(LookupSwitch { default, pairs })
 }
 
-fn parse_lookupswitch_pair<I>(bytes: &mut I, current_line: usize) -> Result<LookupSwitchPair, ParseError>
+fn parse_lookupswitch_pair<I>(
+    bytes: &mut I,
+    current_line: usize,
+) -> Result<LookupSwitchPair, ParseError>
 where
     I: Iterator<Item = FileByte>,
 {
@@ -786,17 +781,14 @@ where
     let value = i32::from_be_bytes(value_bits);
     let jump = parse_u4_index_offset(bytes, current_line)?;
 
-    Ok(LookupSwitchPair {
-        value,
-        jump
-    })
+    Ok(LookupSwitchPair { value, jump })
 }
 
-fn correct_lookupswitch_jumps(lus: &mut LookupSwitch, jump_table: &HashMap<usize, usize>) -> Result<(), ParseError> {
-    let LookupSwitch {
-        default,
-        pairs
-    } = lus;
+fn correct_lookupswitch_jumps(
+    lus: &mut LookupSwitch,
+    jump_table: &HashMap<usize, usize>,
+) -> Result<(), ParseError> {
+    let LookupSwitch { default, pairs } = lus;
     update_jump(default, jump_table)?;
 
     for pair in pairs {
