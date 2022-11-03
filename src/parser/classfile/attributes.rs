@@ -1,4 +1,4 @@
-use crate::parser::utils::{pop_n, pop_u2_as_index, pop_u4_as_index, FileByte, ParseError};
+use crate::parser::utils::{pop_u2_as_index, pop_u4_as_index, FileByte, ParseError};
 
 use super::{
     constant_pool::{ConstantInfo, ConstantPool},
