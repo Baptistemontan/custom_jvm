@@ -26,7 +26,7 @@ use crate::parser::utils::{pop1, pop2, pop4, pop8, pop_n, pop_u2_as_index, FileB
     CONSTANT_Dynamic 17
     CONSTANT_InvokeDynamic 18
     CONSTANT_Module 19
-    CONSTANT_Package 20 
+    CONSTANT_Package 20
 
     CONSTANT_Class_info {
         u1 tag; = 7
@@ -200,10 +200,10 @@ pub enum ConstantInfo {
 }
 
 impl ConstantInfo {
-    fn is_double_sized(&self) ->bool {
+    fn is_double_sized(&self) -> bool {
         match self {
             Self::Double(_) | Self::Long(_) => true,
-            _ => false
+            _ => false,
         }
     }
 }
@@ -382,7 +382,6 @@ where
 {
     let tag = pop1(bytes)?;
 
-    println!("parsing tag {}", tag);
     match tag {
         1 => parse_utf8(bytes),
         // 2 =>
@@ -425,8 +424,6 @@ where
         };
 
         double_flag = constant_info.is_double_sized();
-
-        println!("{} / {} : {:?}", i, info_count, constant_info);
         infos.push(constant_info)
     }
 
