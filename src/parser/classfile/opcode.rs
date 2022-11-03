@@ -662,7 +662,7 @@ where
         }
         _ => {
             return Err(ParseError::InvalidOpCode);
-        },
+        }
     };
 
     Ok(op_code)
