@@ -1,4 +1,9 @@
-use crate::parser::utils::{self, pop1, pop_u1_as_index, pop_u2_as_index, FileByte, ParseError};
+use std::{cell::RefCell, collections::HashMap};
+
+use crate::parser::utils::{
+    self, pop1, pop_u1_as_index, pop_u2_as_index, pop_u2_as_offset, pop_u4_as_index,
+    pop_u4_as_offset, FileByte, ParseError,
+};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ArrayType {
@@ -238,7 +243,33 @@ pub enum OpCode {
     wide,                        // 0xc4 | TODO
 }
 
-fn parse_opcode<I>(bytes: &mut I) -> Result<OpCode, ParseError>
+fn parse_u2_index_offset<I>(bytes: &mut I, current_line: usize) -> Result<usize, ParseError>
+where
+    I: Iterator<Item = FileByte>,
+{
+    let offset = pop_u2_as_offset(bytes)?;
+    let abs_offset = offset.abs() as usize;
+    if offset < 0 {
+        Ok(current_line - abs_offset)
+    } else {
+        Ok(current_line + abs_offset)
+    }
+}
+
+fn parse_u4_index_offset<I>(bytes: &mut I, current_line: usize) -> Result<usize, ParseError>
+where
+    I: Iterator<Item = FileByte>,
+{
+    let offset = pop_u4_as_offset(bytes)?;
+    let abs_offset = offset.abs() as usize;
+    if offset < 0 {
+        Ok(current_line - abs_offset)
+    } else {
+        Ok(current_line + abs_offset)
+    }
+}
+
+fn parse_opcode<I>(bytes: &mut I, current_line: usize) -> Result<OpCode, ParseError>
 where
     I: Iterator<Item = FileByte>,
 {
@@ -363,8 +394,14 @@ where
             let index = pop_u2_as_index(bytes)?;
             getstatic(index)
         }
-        0xa7 => todo!(), // goto
-        0xc8 => todo!(), // goto_w
+        0xa7 => {
+            let target_line = parse_u2_index_offset(bytes, current_line)?;
+            goto(target_line)
+        }
+        0xc8 => {
+            let target_line = parse_u4_index_offset(bytes, current_line)?;
+            goto_w(target_line)
+        }
         0x91 => i2b,
         0x92 => i2c,
         0x87 => i2d,
@@ -383,22 +420,70 @@ where
         0x07 => iconst_4,
         0x08 => iconst_5,
         0x6c => idiv,
-        0xa5 => todo!(), // if_acmpeq
-        0xa6 => todo!(), // if_acmpne
-        0x9f => todo!(), // if_icmpeq
-        0xa0 => todo!(), // if_icmpne
-        0xa1 => todo!(), // if_icmplt
-        0xa2 => todo!(), // if_icmpge
-        0xa3 => todo!(), // if_icmpgt
-        0xa4 => todo!(), // if_icmple
-        0x99 => todo!(), // ifeq
-        0x9a => todo!(), // ifne
-        0x9b => todo!(), // iflt
-        0x9c => todo!(), // ifge
-        0x9d => todo!(), // ifgt
-        0x9e => todo!(), // ifle
-        0xc7 => todo!(), // ifnonnull
-        0xc6 => todo!(), // ifnull
+        0xa5 => {
+            let target_line = parse_u2_index_offset(bytes, current_line)?;
+            if_acmpeq(target_line)
+        }
+        0xa6 => {
+            let target_line = parse_u2_index_offset(bytes, current_line)?;
+            if_acmpne(target_line)
+        }
+        0x9f => {
+            let target_line = parse_u2_index_offset(bytes, current_line)?;
+            if_icmpeq(target_line)
+        }
+        0xa0 => {
+            let target_line = parse_u2_index_offset(bytes, current_line)?;
+            if_icmpne(target_line)
+        }
+        0xa1 => {
+            let target_line = parse_u2_index_offset(bytes, current_line)?;
+            if_icmplt(target_line)
+        }
+        0xa2 => {
+            let target_line = parse_u2_index_offset(bytes, current_line)?;
+            if_icmpge(target_line)
+        }
+        0xa3 => {
+            let target_line = parse_u2_index_offset(bytes, current_line)?;
+            if_icmpgt(target_line)
+        }
+        0xa4 => {
+            let target_line = parse_u2_index_offset(bytes, current_line)?;
+            if_icmple(target_line)
+        }
+        0x99 => {
+            let target_line = parse_u2_index_offset(bytes, current_line)?;
+            ifeq(target_line)
+        }
+        0x9a => {
+            let target_line = parse_u2_index_offset(bytes, current_line)?;
+            ifne(target_line)
+        }
+        0x9b => {
+            let target_line = parse_u2_index_offset(bytes, current_line)?;
+            iflt(target_line)
+        }
+        0x9c => {
+            let target_line = parse_u2_index_offset(bytes, current_line)?;
+            ifge(target_line)
+        }
+        0x9d => {
+            let target_line = parse_u2_index_offset(bytes, current_line)?;
+            ifgt(target_line)
+        }
+        0x9e => {
+            let target_line = parse_u2_index_offset(bytes, current_line)?;
+            ifle(target_line)
+        }
+        0xc7 => {
+            let target_line = parse_u2_index_offset(bytes, current_line)?;
+            ifnonnull(target_line)
+        }
+        0xc6 => {
+            let target_line = parse_u2_index_offset(bytes, current_line)?;
+            ifnull(target_line)
+        }
         0x84 => {
             let index = pop_u1_as_index(bytes)?;
             let delta_bits = pop1(bytes)?;
@@ -464,8 +549,14 @@ where
         0x64 => isub,
         0x7c => iushr,
         0x82 => ixor,
-        0xa8 => todo!(), // jsr
-        0xc9 => todo!(), // jsr_w
+        0xa8 => {
+            let target_line = parse_u2_index_offset(bytes, current_line)?;
+            jsr(target_line)
+        }
+        0xc9 => {
+            let target_line = parse_u4_index_offset(bytes, current_line)?;
+            jsr_w(target_line)
+        }
         0x8a => l2d,
         0x89 => l2f,
         0x88 => l2i,
@@ -545,7 +636,10 @@ where
             let index = pop_u2_as_index(bytes)?;
             putfield(index)
         }
-        0xa9 => todo!(), // ret
+        0xa9 => {
+            let index = pop_u1_as_index(bytes)?;
+            ret(index)
+        }
         0xb1 => retrn,
         0x35 => saload,
         0x56 => sastore,
@@ -567,14 +661,73 @@ pub fn parse_n_opcodes<I>(bytes: &mut I, code_length: usize) -> Result<Vec<OpCod
 where
     I: Iterator<Item = FileByte>,
 {
-    let mut bytes = bytes.take(code_length).peekable();
+    let byte_count = RefCell::new(0);
+
+    let mut bytes = bytes
+        .take(code_length)
+        .scan(&byte_count, |byte_count, byte| {
+            *byte_count.borrow_mut() += 1;
+            Some(byte)
+        })
+        .peekable();
+
+    let mut current_opcode_line = 0;
 
     let mut opcodes = Vec::new();
+    let mut jump_table = HashMap::new();
 
     while bytes.peek().is_some() {
-        let opcode = parse_opcode(&mut bytes)?;
+        let opcode = parse_opcode(&mut bytes, current_opcode_line)?;
+        let total_bytes_taken = *byte_count.borrow();
+        let opcode_size = total_bytes_taken - current_opcode_line;
+        jump_table.insert(current_opcode_line, opcodes.len());
+        current_opcode_line += opcode_size;
         opcodes.push(opcode);
     }
 
+    correct_jump_instructions(opcodes.iter_mut(), &jump_table)?;
+
     Ok(opcodes)
+}
+
+fn correct_jump_instructions<'a, I>(
+    opcodes: I,
+    jump_table: &HashMap<usize, usize>,
+) -> Result<(), ParseError>
+where
+    I: IntoIterator<Item = &'a mut OpCode>,
+{
+    fn update_line(line: &mut usize, jump_table: &HashMap<usize, usize>) -> Result<(), ParseError> {
+        let vec_index = jump_table
+            .get(line)
+            .ok_or(ParseError::InvalidOpcodeJumpIndex)?;
+        *line = *vec_index;
+        Ok(())
+    }
+    for opcode in opcodes {
+        match opcode {
+            OpCode::goto(line)
+            | OpCode::goto_w(line)
+            | OpCode::if_acmpeq(line)
+            | OpCode::if_acmpne(line)
+            | OpCode::if_icmpeq(line)
+            | OpCode::if_icmpne(line)
+            | OpCode::if_icmplt(line)
+            | OpCode::if_icmpge(line)
+            | OpCode::if_icmpgt(line)
+            | OpCode::if_icmple(line)
+            | OpCode::ifeq(line)
+            | OpCode::ifne(line)
+            | OpCode::iflt(line)
+            | OpCode::ifge(line)
+            | OpCode::ifgt(line)
+            | OpCode::ifle(line)
+            | OpCode::ifnonnull(line)
+            | OpCode::ifnull(line)
+            | OpCode::jsr_w(line) => update_line(line, jump_table)?,
+            _ => {}
+        }
+    }
+
+    Ok(())
 }

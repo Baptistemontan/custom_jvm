@@ -8,6 +8,7 @@ pub enum ParseError {
     IoError(std::io::Error),
     InvalidTag(u8),
     BadFileFormat(u32),
+    InvalidOpcodeJumpIndex,
     BadConstPoolIndex {
         target_index: usize,
         pool_size: usize,
@@ -104,4 +105,22 @@ where
         bytes_buff.push(byte);
     }
     Ok(bytes_buff)
+}
+
+pub fn pop_u2_as_offset<I>(bytes: &mut I) -> Result<i16, ParseError>
+where
+    I: Iterator<Item = FileByte>,
+{
+    let bits = pop2(bytes)?;
+    let offset = i16::from_be_bytes(bits);
+    Ok(offset)
+}
+
+pub fn pop_u4_as_offset<I>(bytes: &mut I) -> Result<i32, ParseError>
+where
+    I: Iterator<Item = FileByte>,
+{
+    let bits = pop4(bytes)?;
+    let offset = i32::from_be_bytes(bits);
+    Ok(offset)
 }
