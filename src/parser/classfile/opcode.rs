@@ -660,7 +660,9 @@ where
             let w = parse_wide(bytes)?;
             wide(w)
         }
-        _ => unimplemented!(),
+        _ => {
+            return Err(ParseError::InvalidOpCode);
+        },
     };
 
     Ok(op_code)
