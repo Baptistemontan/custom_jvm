@@ -1,6 +1,4 @@
-use crate::parser::utils::{
-    pop1, pop2, pop4, pop8, pop_n, pop_u2_as_index, FileByte, ParseError,
-};
+use crate::parser::utils::{pop1, pop2, pop4, pop8, pop_n, pop_u2_as_index, FileByte, ParseError};
 
 /*
     cp_info {
