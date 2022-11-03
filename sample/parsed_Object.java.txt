@@ -1,0 +1,846 @@
+ConstantPool {
+        infos: [
+            Class {
+                name_index: 2,
+            },
+            Utf8(
+                "java/lang/StringBuilder",
+            ),
+            MethodRef {
+                class_index: 1,
+                name_and_type_index: 4,
+            },
+            NameAndType {
+                name_index: 5,
+                descriptor_index: 6,
+            },
+            Utf8(
+                "<init>",
+            ),
+            Utf8(
+                "()V",
+            ),
+            MethodRef {
+                class_index: 8,
+                name_and_type_index: 9,
+            },
+            Class {
+                name_index: 10,
+            },
+            NameAndType {
+                name_index: 11,
+                descriptor_index: 12,
+            },
+            Utf8(
+                "java/lang/Object",
+            ),
+            Utf8(
+                "getClass",
+            ),
+            Utf8(
+                "()Ljava/lang/Class;",
+            ),
+            MethodRef {
+                class_index: 14,
+                name_and_type_index: 15,
+            },
+            Class {
+                name_index: 16,
+            },
+            NameAndType {
+                name_index: 17,
+                descriptor_index: 18,
+            },
+            Utf8(
+                "java/lang/Class",
+            ),
+            Utf8(
+                "getName",
+            ),
+            Utf8(
+                "()Ljava/lang/String;",
+            ),
+            MethodRef {
+                class_index: 1,
+                name_and_type_index: 20,
+            },
+            NameAndType {
+                name_index: 21,
+                descriptor_index: 22,
+            },
+            Utf8(
+                "append",
+            ),
+            Utf8(
+                "(Ljava/lang/String;)Ljava/lang/StringBuilder;",
+            ),
+            String {
+                string_index: 24,
+            },
+            Utf8(
+                "@",
+            ),
+            MethodRef {
+                class_index: 8,
+                name_and_type_index: 26,
+            },
+            NameAndType {
+                name_index: 27,
+                descriptor_index: 28,
+            },
+            Utf8(
+                "hashCode",
+            ),
+            Utf8(
+                "()I",
+            ),
+            MethodRef {
+                class_index: 30,
+                name_and_type_index: 31,
+            },
+            Class {
+                name_index: 32,
+            },
+            NameAndType {
+                name_index: 33,
+                descriptor_index: 34,
+            },
+            Utf8(
+                "java/lang/Integer",
+            ),
+            Utf8(
+                "toHexString",
+            ),
+            Utf8(
+                "(I)Ljava/lang/String;",
+            ),
+            MethodRef {
+                class_index: 1,
+                name_and_type_index: 36,
+            },
+            NameAndType {
+                name_index: 37,
+                descriptor_index: 18,
+            },
+            Utf8(
+                "toString",
+            ),
+            MethodRef {
+                class_index: 8,
+                name_and_type_index: 39,
+            },
+            NameAndType {
+                name_index: 40,
+                descriptor_index: 41,
+            },
+            Utf8(
+                "wait",
+            ),
+            Utf8(
+                "(J)V",
+            ),
+            Class {
+                name_index: 43,
+            },
+            Utf8(
+                "java/lang/IllegalArgumentException",
+            ),
+            String {
+                string_index: 45,
+            },
+            Utf8(
+                "timeoutMillis value is negative",
+            ),
+            MethodRef {
+                class_index: 42,
+                name_and_type_index: 47,
+            },
+            NameAndType {
+                name_index: 5,
+                descriptor_index: 48,
+            },
+            Utf8(
+                "(Ljava/lang/String;)V",
+            ),
+            Integer(
+                999999,
+            ),
+            String {
+                string_index: 51,
+            },
+            Utf8(
+                "nanosecond timeout value out of range",
+            ),
+            Class {
+                name_index: 53,
+            },
+            Utf8(
+                "java/lang/Long",
+            ),
+            Long(
+                9223372036854775807,
+            ),
+            Padding,
+            Utf8(
+                "Code",
+            ),
+            Utf8(
+                "LineNumberTable",
+            ),
+            Utf8(
+                "LocalVariableTable",
+            ),
+            Utf8(
+                "this",
+            ),
+            Utf8(
+                "Ljava/lang/Object;",
+            ),
+            Utf8(
+                "RuntimeVisibleAnnotations",
+            ),
+            Utf8(
+                "Ljdk/internal/HotSpotIntrinsicCandidate;",
+            ),
+            Utf8(
+                "Signature",
+            ),
+            Utf8(
+                "()Ljava/lang/Class<*>;",
+            ),
+            Utf8(
+                "equals",
+            ),
+            Utf8(
+                "(Ljava/lang/Object;)Z",
+            ),
+            Utf8(
+                "obj",
+            ),
+            Utf8(
+                "StackMapTable",
+            ),
+            Utf8(
+                "clone",
+            ),
+            Utf8(
+                "()Ljava/lang/Object;",
+            ),
+            Utf8(
+                "Exceptions",
+            ),
+            Class {
+                name_index: 73,
+            },
+            Utf8(
+                "java/lang/CloneNotSupportedException",
+            ),
+            Utf8(
+                "notify",
+            ),
+            Utf8(
+                "notifyAll",
+            ),
+            Class {
+                name_index: 77,
+            },
+            Utf8(
+                "java/lang/InterruptedException",
+            ),
+            Utf8(
+                "(JI)V",
+            ),
+            Utf8(
+                "timeoutMillis",
+            ),
+            Utf8(
+                "J",
+            ),
+            Utf8(
+                "nanos",
+            ),
+            Utf8(
+                "I",
+            ),
+            Utf8(
+                "finalize",
+            ),
+            Class {
+                name_index: 85,
+            },
+            Utf8(
+                "java/lang/Throwable",
+            ),
+            Utf8(
+                "Deprecated",
+            ),
+            Utf8(
+                "Ljava/lang/Deprecated;",
+            ),
+            Utf8(
+                "since",
+            ),
+            Utf8(
+                "9",
+            ),
+            Utf8(
+                "SourceFile",
+            ),
+            Utf8(
+                "Object.java",
+            ),
+        ],
+    },
+    acces_flag: AccesFlag(
+        33,
+    ),
+    interfaces: Interfaces {
+        interfaces: [],
+    },
+    fields: Fields {
+        fields: [],
+    },
+    methods: Methods {
+        methods: [
+            MethodInfo {
+                access_flags: 1,
+                name_index: 5,
+                descriptor_index: 6,
+                attributes: [
+                    AttributeInfo {
+                        attribute_name_index: 56,
+                        attribute: Code(
+                            CodeAttribute {
+                                max_stack: 0,
+                                max_locals: 1,
+                                code: [
+                                    retrn,
+                                ],
+                                exception_table: [],
+                                attributes: [
+                                    AttributeInfo {
+                                        attribute_name_index: 57,
+                                        attribute: LineNumberTable(
+                                            LineNumberTableAttribute {
+                                                infos: [
+                                                    LineNumberTableInfo {
+                                                        start_pc: 0,
+                                                        line_number: 45,
+                                                    },
+                                                ],
+                                            },
+                                        ),
+                                    },
+                                    AttributeInfo {
+                                        attribute_name_index: 58,
+                                        attribute: Unknown(
+                                            "LocalVariableTable",
+                                        ),
+                                    },
+                                ],
+                            },
+                        ),
+                    },
+                    AttributeInfo {
+                        attribute_name_index: 61,
+                        attribute: Unknown(
+                            "RuntimeVisibleAnnotations",
+                        ),
+                    },
+                ],
+            },
+            MethodInfo {
+                access_flags: 273,
+                name_index: 11,
+                descriptor_index: 12,
+                attributes: [
+                    AttributeInfo {
+                        attribute_name_index: 63,
+                        attribute: Unknown(
+                            "Signature",
+                        ),
+                    },
+                    AttributeInfo {
+                        attribute_name_index: 61,
+                        attribute: Unknown(
+                            "RuntimeVisibleAnnotations",
+                        ),
+                    },
+                ],
+            },
+            MethodInfo {
+                access_flags: 257,
+                name_index: 27,
+                descriptor_index: 28,
+                attributes: [
+                    AttributeInfo {
+                        attribute_name_index: 61,
+                        attribute: Unknown(
+                            "RuntimeVisibleAnnotations",
+                        ),
+                    },
+                ],
+            },
+            MethodInfo {
+                access_flags: 1,
+                name_index: 65,
+                descriptor_index: 66,
+                attributes: [
+                    AttributeInfo {
+                        attribute_name_index: 56,
+                        attribute: Code(
+                            CodeAttribute {
+                                max_stack: 2,
+                                max_locals: 2,
+                                code: [
+                                    aload_0,
+                                    aload_1,
+                                    if_acmpne(
+                                        5,
+                                    ),
+                                    iconst_1,
+                                    goto(
+                                        6,
+                                    ),
+                                    iconst_0,
+                                    ireturn,
+                                ],
+                                exception_table: [],
+                                attributes: [
+                                    AttributeInfo {
+                                        attribute_name_index: 57,
+                                        attribute: LineNumberTable(
+                                            LineNumberTableAttribute {
+                                                infos: [
+                                                    LineNumberTableInfo {
+                                                        start_pc: 0,
+                                                        line_number: 151,
+                                                    },
+                                                ],
+                                            },
+                                        ),
+                                    },
+                                    AttributeInfo {
+                                        attribute_name_index: 58,
+                                        attribute: Unknown(
+                                            "LocalVariableTable",
+                                        ),
+                                    },
+                                    AttributeInfo {
+                                        attribute_name_index: 68,
+                                        attribute: Unknown(
+                                            "StackMapTable",
+                                        ),
+                                    },
+                                ],
+                            },
+                        ),
+                    },
+                ],
+            },
+            MethodInfo {
+                access_flags: 260,
+                name_index: 69,
+                descriptor_index: 70,
+                attributes: [
+                    AttributeInfo {
+                        attribute_name_index: 71,
+                        attribute: Unknown(
+                            "Exceptions",
+                        ),
+                    },
+                    AttributeInfo {
+                        attribute_name_index: 61,
+                        attribute: Unknown(
+                            "RuntimeVisibleAnnotations",
+                        ),
+                    },
+                ],
+            },
+            MethodInfo {
+                access_flags: 1,
+                name_index: 37,
+                descriptor_index: 18,
+                attributes: [
+                    AttributeInfo {
+                        attribute_name_index: 56,
+                        attribute: Code(
+                            CodeAttribute {
+                                max_stack: 2,
+                                max_locals: 1,
+                                code: [
+                                    new(
+                                        1,
+                                    ),
+                                    dup,
+                                    invokespecial(
+                                        3,
+                                    ),
+                                    aload_0,
+                                    invokevirtual(
+                                        7,
+                                    ),
+                                    invokevirtual(
+                                        13,
+                                    ),
+                                    invokevirtual(
+                                        19,
+                                    ),
+                                    ldc(
+                                        23,
+                                    ),
+                                    invokevirtual(
+                                        19,
+                                    ),
+                                    aload_0,
+                                    invokevirtual(
+                                        25,
+                                    ),
+                                    invokestatic(
+                                        29,
+                                    ),
+                                    invokevirtual(
+                                        19,
+                                    ),
+                                    invokevirtual(
+                                        35,
+                                    ),
+                                    areturn,
+                                ],
+                                exception_table: [],
+                                attributes: [
+                                    AttributeInfo {
+                                        attribute_name_index: 57,
+                                        attribute: LineNumberTable(
+                                            LineNumberTableAttribute {
+                                                infos: [
+                                                    LineNumberTableInfo {
+                                                        start_pc: 0,
+                                                        line_number: 239,
+                                                    },
+                                                ],
+                                            },
+                                        ),
+                                    },
+                                    AttributeInfo {
+                                        attribute_name_index: 58,
+                                        attribute: Unknown(
+                                            "LocalVariableTable",
+                                        ),
+                                    },
+                                ],
+                            },
+                        ),
+                    },
+                ],
+            },
+            MethodInfo {
+                access_flags: 273,
+                name_index: 74,
+                descriptor_index: 6,
+                attributes: [
+                    AttributeInfo {
+                        attribute_name_index: 61,
+                        attribute: Unknown(
+                            "RuntimeVisibleAnnotations",
+                        ),
+                    },
+                ],
+            },
+            MethodInfo {
+                access_flags: 273,
+                name_index: 75,
+                descriptor_index: 6,
+                attributes: [
+                    AttributeInfo {
+                        attribute_name_index: 61,
+                        attribute: Unknown(
+                            "RuntimeVisibleAnnotations",
+                        ),
+                    },
+                ],
+            },
+            MethodInfo {
+                access_flags: 17,
+                name_index: 40,
+                descriptor_index: 6,
+                attributes: [
+                    AttributeInfo {
+                        attribute_name_index: 56,
+                        attribute: Code(
+                            CodeAttribute {
+                                max_stack: 3,
+                                max_locals: 1,
+                                code: [
+                                    aload_0,
+                                    lconst_0,
+                                    invokevirtual(
+                                        38,
+                                    ),
+                                    retrn,
+                                ],
+                                exception_table: [],
+                                attributes: [
+                                    AttributeInfo {
+                                        attribute_name_index: 57,
+                                        attribute: LineNumberTable(
+                                            LineNumberTableAttribute {
+                                                infos: [
+                                                    LineNumberTableInfo {
+                                                        start_pc: 0,
+                                                        line_number: 321,
+                                                    },
+                                                    LineNumberTableInfo {
+                                                        start_pc: 5,
+                                                        line_number: 322,
+                                                    },
+                                                ],
+                                            },
+                                        ),
+                                    },
+                                    AttributeInfo {
+                                        attribute_name_index: 58,
+                                        attribute: Unknown(
+                                            "LocalVariableTable",
+                                        ),
+                                    },
+                                ],
+                            },
+                        ),
+                    },
+                    AttributeInfo {
+                        attribute_name_index: 71,
+                        attribute: Unknown(
+                            "Exceptions",
+                        ),
+                    },
+                ],
+            },
+            MethodInfo {
+                access_flags: 273,
+                name_index: 40,
+                descriptor_index: 41,
+                attributes: [
+                    AttributeInfo {
+                        attribute_name_index: 71,
+                        attribute: Unknown(
+                            "Exceptions",
+                        ),
+                    },
+                ],
+            },
+            MethodInfo {
+                access_flags: 17,
+                name_index: 40,
+                descriptor_index: 78,
+                attributes: [
+                    AttributeInfo {
+                        attribute_name_index: 56,
+                        attribute: Code(
+                            CodeAttribute {
+                                max_stack: 4,
+                                max_locals: 4,
+                                code: [
+                                    lload_1,
+                                    lconst_0,
+                                    lcmp,
+                                    ifge(
+                                        9,
+                                    ),
+                                    new(
+                                        42,
+                                    ),
+                                    dup,
+                                    ldc(
+                                        44,
+                                    ),
+                                    invokespecial(
+                                        46,
+                                    ),
+                                    athrow,
+                                    iload_3,
+                                    iflt(
+                                        14,
+                                    ),
+                                    iload_3,
+                                    ldc(
+                                        49,
+                                    ),
+                                    if_icmple(
+                                        19,
+                                    ),
+                                    new(
+                                        42,
+                                    ),
+                                    dup,
+                                    ldc(
+                                        50,
+                                    ),
+                                    invokespecial(
+                                        46,
+                                    ),
+                                    athrow,
+                                    iload_3,
+                                    ifle(
+                                        29,
+                                    ),
+                                    lload_1,
+                                    ldc2_w(
+                                        54,
+                                    ),
+                                    lcmp,
+                                    ifge(
+                                        29,
+                                    ),
+                                    lload_1,
+                                    lconst_1,
+                                    ladd,
+                                    lstore_1,
+                                    aload_0,
+                                    lload_1,
+                                    invokevirtual(
+                                        38,
+                                    ),
+                                    retrn,
+                                ],
+                                exception_table: [],
+                                attributes: [
+                                    AttributeInfo {
+                                        attribute_name_index: 57,
+                                        attribute: LineNumberTable(
+                                            LineNumberTableAttribute {
+                                                infos: [
+                                                    LineNumberTableInfo {
+                                                        start_pc: 0,
+                                                        line_number: 442,
+                                                    },
+                                                    LineNumberTableInfo {
+                                                        start_pc: 6,
+                                                        line_number: 443,
+                                                    },
+                                                    LineNumberTableInfo {
+                                                        start_pc: 16,
+                                                        line_number: 446,
+                                                    },
+                                                    LineNumberTableInfo {
+                                                        start_pc: 26,
+                                                        line_number: 447,
+                                                    },
+                                                    LineNumberTableInfo {
+                                                        start_pc: 36,
+                                                        line_number: 451,
+                                                    },
+                                                    LineNumberTableInfo {
+                                                        start_pc: 48,
+                                                        line_number: 452,
+                                                    },
+                                                    LineNumberTableInfo {
+                                                        start_pc: 52,
+                                                        line_number: 455,
+                                                    },
+                                                    LineNumberTableInfo {
+                                                        start_pc: 57,
+                                                        line_number: 456,
+                                                    },
+                                                ],
+                                            },
+                                        ),
+                                    },
+                                    AttributeInfo {
+                                        attribute_name_index: 58,
+                                        attribute: Unknown(
+                                            "LocalVariableTable",
+                                        ),
+                                    },
+                                    AttributeInfo {
+                                        attribute_name_index: 68,
+                                        attribute: Unknown(
+                                            "StackMapTable",
+                                        ),
+                                    },
+                                ],
+                            },
+                        ),
+                    },
+                    AttributeInfo {
+                        attribute_name_index: 71,
+                        attribute: Unknown(
+                            "Exceptions",
+                        ),
+                    },
+                ],
+            },
+            MethodInfo {
+                access_flags: 4,
+                name_index: 83,
+                descriptor_index: 6,
+                attributes: [
+                    AttributeInfo {
+                        attribute_name_index: 56,
+                        attribute: Code(
+                            CodeAttribute {
+                                max_stack: 0,
+                                max_locals: 1,
+                                code: [
+                                    retrn,
+                                ],
+                                exception_table: [],
+                                attributes: [
+                                    AttributeInfo {
+                                        attribute_name_index: 57,
+                                        attribute: LineNumberTable(
+                                            LineNumberTableAttribute {
+                                                infos: [
+                                                    LineNumberTableInfo {
+                                                        start_pc: 0,
+                                                        line_number: 551,
+                                                    },
+                                                ],
+                                            },
+                                        ),
+                                    },
+                                    AttributeInfo {
+                                        attribute_name_index: 58,
+                                        attribute: Unknown(
+                                            "LocalVariableTable",
+                                        ),
+                                    },
+                                ],
+                            },
+                        ),
+                    },
+                    AttributeInfo {
+                        attribute_name_index: 71,
+                        attribute: Unknown(
+                            "Exceptions",
+                        ),
+                    },
+                    AttributeInfo {
+                        attribute_name_index: 86,
+                        attribute: Unknown(
+                            "Deprecated",
+                        ),
+                    },
+                    AttributeInfo {
+                        attribute_name_index: 61,
+                        attribute: Unknown(
+                            "RuntimeVisibleAnnotations",
+                        ),
+                    },
+                ],
+            },
+        ],
+    },
+    attributes: Attributes {
+        attributes: [
+            AttributeInfo {
+                attribute_name_index: 90,
+                attribute: SourceFile(
+                    SourceFileAttribute {
+                        source_file_index: 91,
+                    },
+                ),
+            },
+        ],
+    },
+}
