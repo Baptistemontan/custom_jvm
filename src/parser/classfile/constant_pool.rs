@@ -23,8 +23,10 @@ use crate::parser::utils::{pop1, pop2, pop4, pop8, pop_n, pop_u2_as_index, FileB
     NONE
     CONSTANT_MethodHandle 15
     CONSTANT_MethodType 16
-    NONE
+    CONSTANT_Dynamic 17
     CONSTANT_InvokeDynamic 18
+    CONSTANT_Module 19
+    CONSTANT_Package 20 
 
     CONSTANT_Class_info {
         u1 tag; = 7
@@ -81,19 +83,35 @@ use crate::parser::utils::{pop1, pop2, pop4, pop8, pop_n, pop_u2_as_index, FileB
         u1 tag; = 16
         u2 descriptor_index; -> CONSTANT_Utf8_info
     }
+    CONSTANT_Dynamic_info {
+        u1 tag; = 17
+        u2 bootstrap_method_attr_index; -> bootstrap table
+        u2 name_and_type_index; -> CONSTANT_NameAndType_info
+    }
+
     CONSTANT_InvokeDynamic_info {
         u1 tag; = 18
         u2 bootstrap_method_attr_index; -> bootstrap table
         u2 name_and_type_index; -> CONSTANT_NameAndType_info
     }
 
-
-
     CONSTANT_MethodHandle_info {
         u1 tag; = 15
         u1 reference_kind;
         u2 reference_index;
     }
+
+    CONSTANT_Module_info {
+        u1 tag; = 19
+        u2 name_index; -> CONSTANT_Utf8_info
+    }
+
+    CONSTANT_Package_info {
+        u1 tag;
+        u2 name_index; -> CONSTANT_Utf8_info
+    }
+
+
 */
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -164,10 +182,30 @@ pub enum ConstantInfo {
     MethodType {
         descriptor_index: usize,
     },
+    Dynamic {
+        bootstrap_method_attr_index: usize,
+        name_and_type_index: usize,
+    },
     InvokeDynamic {
         bootstrap_method_attr_index: usize,
         name_and_type_index: usize,
     },
+    Module {
+        name_index: usize,
+    },
+    Package {
+        name_index: usize,
+    },
+    Padding,
+}
+
+impl ConstantInfo {
+    fn is_double_sized(&self) ->bool {
+        match self {
+            Self::Double(_) | Self::Long(_) => true,
+            _ => false
+        }
+    }
 }
 
 fn parse_utf8<I>(bytes: &mut I) -> Result<ConstantInfo, ParseError>
@@ -310,11 +348,41 @@ where
     })
 }
 
+fn parse_dynamic<I>(bytes: &mut I) -> Result<ConstantInfo, ParseError>
+where
+    I: Iterator<Item = FileByte>,
+{
+    let bootstrap_method_attr_index = pop_u2_as_index(bytes)?;
+    let name_and_type_index = pop_u2_as_index(bytes)?;
+    Ok(ConstantInfo::Dynamic {
+        bootstrap_method_attr_index,
+        name_and_type_index,
+    })
+}
+
+fn parse_module<I>(bytes: &mut I) -> Result<ConstantInfo, ParseError>
+where
+    I: Iterator<Item = FileByte>,
+{
+    let name_index = pop_u2_as_index(bytes)?;
+    Ok(ConstantInfo::Module { name_index })
+}
+
+fn parse_package<I>(bytes: &mut I) -> Result<ConstantInfo, ParseError>
+where
+    I: Iterator<Item = FileByte>,
+{
+    let name_index = pop_u2_as_index(bytes)?;
+    Ok(ConstantInfo::Package { name_index })
+}
+
 fn parse_constant_info<I>(bytes: &mut I) -> Result<ConstantInfo, ParseError>
 where
     I: Iterator<Item = FileByte>,
 {
     let tag = pop1(bytes)?;
+
+    println!("parsing tag {}", tag);
     match tag {
         1 => parse_utf8(bytes),
         // 2 =>
@@ -332,8 +400,10 @@ where
         // 14 =>
         15 => parse_method_handle(bytes),
         16 => parse_method_type(bytes),
-        // 17 =>
+        17 => parse_dynamic(bytes),
         18 => parse_invoke_dynamic(bytes),
+        19 => parse_module(bytes),
+        20 => parse_package(bytes),
         _ => Err(ParseError::InvalidTag(tag)),
     }
 }
@@ -345,9 +415,18 @@ where
     let info_count: usize = pop_u2_as_index(bytes)?;
 
     let mut infos = Vec::with_capacity(info_count);
+    let mut double_flag = false;
 
-    for _ in 1..info_count {
-        let constant_info = parse_constant_info(bytes)?;
+    for i in 1..info_count {
+        let constant_info = if double_flag {
+            ConstantInfo::Padding
+        } else {
+            parse_constant_info(bytes)?
+        };
+
+        double_flag = constant_info.is_double_sized();
+
+        println!("{} / {} : {:?}", i, info_count, constant_info);
         infos.push(constant_info)
     }
 
