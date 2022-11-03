@@ -1,4 +1,4 @@
-use crate::parser::utils::{pop_u2_as_index, pop_u4_as_index, FileByte, ParseError};
+use crate::parser::utils::{pop_u2_as_index, pop_u4_as_index, FileByte, ParseError, skip_n};
 
 use super::{
     constant_pool::{ConstantInfo, ConstantPool},
@@ -69,9 +69,7 @@ where
             // silently ignore unknown attributes
 
             // still need to skip the bytes
-            if bytes.take(attribute_len).count() != attribute_len {
-                return Err(ParseError::EndOfStream);
-            }
+            skip_n(bytes, attribute_len)?;
             Attribute::Unknown(name.to_string())
         }
     };
