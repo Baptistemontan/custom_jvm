@@ -668,7 +668,10 @@ where
     Ok(op_code)
 }
 
-pub fn parse_n_opcodes<I>(bytes: &mut I, code_length: usize) -> Result<Vec<OpCode>, ParseError>
+pub fn parse_n_opcodes<I>(
+    bytes: &mut I,
+    code_length: usize,
+) -> Result<(Vec<OpCode>, HashMap<usize, usize>), ParseError>
 where
     I: Iterator<Item = FileByte>,
 {
@@ -699,15 +702,22 @@ where
         opcodes.push(opcode);
     }
 
-    correct_jump_instructions(opcodes.iter_mut(), &jump_table)?;
+    correct_jump_instructions(&mut opcodes, &jump_table)?;
 
-    Ok(opcodes)
+    Ok((opcodes, jump_table))
 }
 
-fn update_jump(line: &mut usize, jump_table: &HashMap<usize, usize>) -> Result<(), ParseError> {
+pub fn update_jump(
+    line: &mut usize,
+    jump_table: &HashMap<usize, usize>,
+    opcode: &'static str,
+) -> Result<(), ParseError> {
     let vec_index = jump_table
         .get(line)
-        .ok_or(ParseError::InvalidOpcodeJumpIndex)?;
+        .ok_or(ParseError::InvalidOpcodeJumpIndex {
+            opcode,
+            jump_target: *line,
+        })?;
     *line = *vec_index;
     Ok(())
 }
@@ -721,25 +731,25 @@ where
 {
     for opcode in opcodes {
         match opcode {
-            OpCode::goto(line)
-            | OpCode::goto_w(line)
-            | OpCode::if_acmpeq(line)
-            | OpCode::if_acmpne(line)
-            | OpCode::if_icmpeq(line)
-            | OpCode::if_icmpne(line)
-            | OpCode::if_icmplt(line)
-            | OpCode::if_icmpge(line)
-            | OpCode::if_icmpgt(line)
-            | OpCode::if_icmple(line)
-            | OpCode::ifeq(line)
-            | OpCode::ifne(line)
-            | OpCode::iflt(line)
-            | OpCode::ifge(line)
-            | OpCode::ifgt(line)
-            | OpCode::ifle(line)
-            | OpCode::ifnonnull(line)
-            | OpCode::ifnull(line)
-            | OpCode::jsr_w(line) => update_jump(line, jump_table)?,
+            OpCode::goto(line) => update_jump(line, jump_table, "goto")?,
+            OpCode::goto_w(line) => update_jump(line, jump_table, "goto_w")?,
+            OpCode::if_acmpeq(line) => update_jump(line, jump_table, "if_acmpeq")?,
+            OpCode::if_acmpne(line) => update_jump(line, jump_table, "if_acmpne")?,
+            OpCode::if_icmpeq(line) => update_jump(line, jump_table, "if_icmpeq")?,
+            OpCode::if_icmpne(line) => update_jump(line, jump_table, "if_icmpne")?,
+            OpCode::if_icmplt(line) => update_jump(line, jump_table, "if_icmplt")?,
+            OpCode::if_icmpge(line) => update_jump(line, jump_table, "if_icmpge")?,
+            OpCode::if_icmpgt(line) => update_jump(line, jump_table, "if_icmpgt")?,
+            OpCode::if_icmple(line) => update_jump(line, jump_table, "if_icmple")?,
+            OpCode::ifeq(line) => update_jump(line, jump_table, "ifeq")?,
+            OpCode::ifne(line) => update_jump(line, jump_table, "ifne")?,
+            OpCode::iflt(line) => update_jump(line, jump_table, "iflt")?,
+            OpCode::ifge(line) => update_jump(line, jump_table, "ifge")?,
+            OpCode::ifgt(line) => update_jump(line, jump_table, "ifgt")?,
+            OpCode::ifle(line) => update_jump(line, jump_table, "ifle")?,
+            OpCode::ifnonnull(line) => update_jump(line, jump_table, "ifnonnull")?,
+            OpCode::ifnull(line) => update_jump(line, jump_table, "ifnull")?,
+            OpCode::jsr_w(line) => update_jump(line, jump_table, "jsr_w")?,
             OpCode::lookupswitch(lus) => correct_lookupswitch_jumps(lus, jump_table)?,
             OpCode::tableswitch(ts) => correct_tableswitch_jumps(ts, jump_table)?,
             _ => {}
@@ -767,11 +777,12 @@ fn parse_lookupswitch<I>(bytes: &mut I, current_line: usize) -> Result<LookupSwi
 where
     I: Iterator<Item = FileByte>,
 {
-    let padding = 4 - ((current_line + 1) % 4);
+    let padding = (4 - ((current_line + 1) % 4)) % 4;
 
     skip_n(bytes, padding)?;
     let default = parse_u4_index_offset(bytes, current_line)?;
     let npairs = pop_u4_as_index(bytes)?;
+
     let mut pairs = Vec::with_capacity(npairs);
 
     for _ in 0..npairs {
@@ -801,10 +812,10 @@ fn correct_lookupswitch_jumps(
     jump_table: &HashMap<usize, usize>,
 ) -> Result<(), ParseError> {
     let LookupSwitch { default, pairs } = lus;
-    update_jump(default, jump_table)?;
+    update_jump(default, jump_table, "lookupswitch_default")?;
 
     for pair in pairs {
-        update_jump(&mut pair.jump, jump_table)?;
+        update_jump(&mut pair.jump, jump_table, "lookupswitch_pair")?;
     }
 
     Ok(())
@@ -859,10 +870,10 @@ fn correct_tableswitch_jumps(
 ) -> Result<(), ParseError> {
     let TableSwitch { default, jumps, .. } = ts;
 
-    update_jump(default, jump_table)?;
+    update_jump(default, jump_table, "tableswitch_default")?;
 
     for target_line in jumps {
-        update_jump(target_line, jump_table)?;
+        update_jump(target_line, jump_table, "tableswitch_target")?;
     }
 
     Ok(())

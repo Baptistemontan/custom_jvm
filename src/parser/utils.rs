@@ -8,7 +8,10 @@ pub enum ParseError {
     IoError(std::io::Error),
     InvalidTag(u8),
     BadFileFormat(u32),
-    InvalidOpcodeJumpIndex,
+    InvalidOpcodeJumpIndex {
+        opcode: &'static str,
+        jump_target: usize,
+    },
     BadConstPoolIndex {
         target_index: usize,
         pool_size: usize,

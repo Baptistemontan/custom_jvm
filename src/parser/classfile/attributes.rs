@@ -1,8 +1,10 @@
+use std::collections::HashMap;
+
 use crate::parser::utils::{pop_u2_as_index, pop_u4_as_index, skip_n, FileByte, ParseError};
 
 use super::{
     constant_pool::{ConstantInfo, ConstantPool},
-    opcode::{parse_n_opcodes, OpCode},
+    opcode::{parse_n_opcodes, update_jump, OpCode},
 };
 
 #[derive(Debug, Clone)]
@@ -170,6 +172,21 @@ where
     })
 }
 
+fn update_exception_table_jumps(
+    exception_table: &mut ExceptionTableInfo,
+    jump_table: &HashMap<usize, usize>,
+) -> Result<(), ParseError> {
+    let ExceptionTableInfo {
+        start_pc,
+        end_pc,
+        handler_pc,
+        ..
+    } = exception_table;
+    update_jump(start_pc, jump_table, "exception_table")?;
+    update_jump(end_pc, jump_table, "exception_table")?;
+    update_jump(handler_pc, jump_table, "exception_table")
+}
+
 fn parse_code_attribute<I>(
     bytes: &mut I,
     constant_pool: &ConstantPool,
@@ -180,13 +197,14 @@ where
     let max_stack = pop_u2_as_index(bytes)?;
     let max_locals = pop_u2_as_index(bytes)?;
     let code_length = pop_u4_as_index(bytes)?;
-    let code = parse_n_opcodes(bytes, code_length)?;
+    let (code, jump_table) = parse_n_opcodes(bytes, code_length)?;
     let exception_table_len = pop_u2_as_index(bytes)?;
 
     let mut exception_table = Vec::with_capacity(exception_table_len);
 
     for _ in 0..exception_table_len {
-        let exception_info = parse_exception_table_info(bytes)?;
+        let mut exception_info = parse_exception_table_info(bytes)?;
+        update_exception_table_jumps(&mut exception_info, &jump_table)?;
         exception_table.push(exception_info);
     }
 
