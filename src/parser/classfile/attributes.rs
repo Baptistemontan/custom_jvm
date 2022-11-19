@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, ops::RangeInclusive};
 
 use crate::parser::utils::{pop_u2_as_index, pop_u4_as_index, skip_n, FileByte, ParseError};
 
@@ -140,8 +140,7 @@ where
 
 #[derive(Debug, Clone)]
 pub struct ExceptionTableInfo {
-    start_pc: usize,
-    end_pc: usize,
+    code_range: RangeInclusive<usize>,
     handler_pc: usize,
     catch_type: usize,
 }
@@ -165,8 +164,7 @@ where
     let catch_type = pop_u2_as_index(bytes)?;
 
     Ok(ExceptionTableInfo {
-        start_pc,
-        end_pc,
+        code_range: start_pc..=end_pc,
         handler_pc,
         catch_type,
     })
@@ -177,13 +175,15 @@ fn update_exception_table_jumps(
     jump_table: &HashMap<usize, usize>,
 ) -> Result<(), ParseError> {
     let ExceptionTableInfo {
-        start_pc,
-        end_pc,
+        code_range,
         handler_pc,
         ..
     } = exception_table;
-    update_jump(start_pc, jump_table, "exception_table")?;
-    update_jump(end_pc, jump_table, "exception_table")?;
+    let mut start_pc = *code_range.start();
+    let mut end_pc = *code_range.end();
+    update_jump(&mut start_pc, jump_table, "exception_table")?;
+    update_jump(&mut end_pc, jump_table, "exception_table")?;
+    *code_range = start_pc..=end_pc;
     update_jump(handler_pc, jump_table, "exception_table")
 }
 
