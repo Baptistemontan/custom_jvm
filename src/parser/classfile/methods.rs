@@ -24,6 +24,7 @@ where
 {
     let access_flags = pop_u16(bytes)?;
     let name_index = pop_u2_as_index(bytes)?;
+    // let method_name_index = constant_pool.get(name_index);
     let descriptor_index = pop_u2_as_index(bytes)?;
     let attributes_count: usize = pop_u2_as_index(bytes)?;
     let mut attributes = Vec::with_capacity(attributes_count);
