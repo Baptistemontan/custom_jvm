@@ -5,36 +5,36 @@ use std::{
 
 use crate::parser::classfile::opcode::ArrayType;
 
-use super::{Class, Instance, InternalError};
+use super::{Class, InternalError, Reference};
 
 #[derive(Debug, Clone)]
 pub enum Array {
     Boolean(Arc<Mutex<Box<[bool]>>>),
-    Char(Arc<Mutex<Box<[char]>>>),
+    Char(Arc<Mutex<Box<[u8]>>>),
     Float(Arc<Mutex<Box<[f32]>>>),
     Double(Arc<Mutex<Box<[f64]>>>),
     Byte(Arc<Mutex<Box<[u8]>>>),
     Short(Arc<Mutex<Box<[i16]>>>),
     Int(Arc<Mutex<Box<[i32]>>>),
     Long(Arc<Mutex<Box<[i64]>>>),
-    Instance(Arc<InstanceArray>),
+    Reference(Arc<ReferenceArray>),
 }
 
 #[derive(Debug)]
-pub struct InstanceArray {
-    array: Mutex<Box<[Option<Instance>]>>,
+pub struct ReferenceArray {
+    array: Mutex<Box<[Option<Reference>]>>,
     class: Arc<Class>,
 }
 
-impl Deref for InstanceArray {
-    type Target = Mutex<Box<[Option<Instance>]>>;
+impl Deref for ReferenceArray {
+    type Target = Mutex<Box<[Option<Reference>]>>;
 
     fn deref(&self) -> &Self::Target {
         &self.array
     }
 }
 
-impl InstanceArray {
+impl ReferenceArray {
     pub fn get_class(&self) -> &Arc<Class> {
         &self.class
     }
@@ -58,8 +58,8 @@ fn get_size<T>(array: &Mutex<Box<[T]>>) -> Result<i32, InternalError> {
 }
 
 impl Array {
-    pub fn new_instance(class: Arc<Class>, size: usize) -> Self {
-        Array::Instance(Arc::new(InstanceArray {
+    pub fn new_reference(class: Arc<Class>, size: usize) -> Self {
+        Array::Reference(Arc::new(ReferenceArray {
             array: Mutex::new(new_boxed_array(size)),
             class,
         }))
@@ -88,7 +88,7 @@ impl Array {
             Array::Short(array) => get_size(&array),
             Array::Int(array) => get_size(&array),
             Array::Long(array) => get_size(&array),
-            Array::Instance(array) => get_size(&array),
+            Array::Reference(array) => get_size(&array),
         }
     }
 

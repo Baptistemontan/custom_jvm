@@ -4,14 +4,14 @@ use std::sync::Arc;
 use std::ops::Deref;
 
 #[derive(Debug, Clone)]
-pub struct Instance(Arc<InstanceInner>);
+pub struct Reference(Arc<InstanceInner>);
 
 #[derive(Debug)]
 pub struct InstanceInner {
     class: Arc<Class>,
 }
 
-impl Deref for Instance {
+impl Deref for Reference {
     type Target = InstanceInner;
 
     fn deref(&self) -> &Self::Target {
@@ -24,3 +24,17 @@ impl InstanceInner {
         &self.class
     }
 }
+
+impl Reference {
+    pub fn is_subclass(&self, super_class: &Arc<Class>) -> bool {
+        self.get_class().is_subclass(super_class)
+    }
+}
+
+impl PartialEq for Reference {
+    fn eq(&self, rhs: &Self) -> bool {
+        Arc::ptr_eq(&self.0, &rhs.0)
+    }
+}
+
+impl Eq for Reference {}
