@@ -28,7 +28,7 @@ pub enum InternalError {
     EmptyLocals,
     LocalsOutOfBounds,
     InvalidWideLoad,
-    InvalidProgrammCounter
+    InvalidProgrammCounter,
 }
 
 impl<Guard> From<PoisonError<Guard>> for InternalError {

@@ -1,6 +1,6 @@
 use std::{ops::RangeInclusive, sync::Arc};
 
-use super::{Class, OpCode, Object, InternalError, Instance};
+use super::{Class, Instance, InternalError, Object, OpCode};
 
 pub enum ResultValue {
     None,
@@ -8,7 +8,6 @@ pub enum ResultValue {
     Return,
     ReturnObject(Object),
 }
-
 
 pub type Exception = Instance;
 pub type OpResult = Result<ResultValue, Exception>;
@@ -38,7 +37,9 @@ pub struct ExceptionTable {
 
 impl ExceptionTable {
     fn get_jump(&self, current_pc: usize, exception_class: &Arc<Class>) -> Option<usize> {
-        self.infos.iter().find_map(|info| info.does_handle(current_pc, exception_class))
+        self.infos
+            .iter()
+            .find_map(|info| info.does_handle(current_pc, exception_class))
     }
 }
 
@@ -49,7 +50,6 @@ pub struct Code {
     opcodes: Vec<OpCode>,
     exception_table: ExceptionTable,
 }
-
 
 impl Code {
     pub fn execute(&self) -> Result<Result<Option<Object>, Exception>, InternalError> {
@@ -64,14 +64,14 @@ impl Code {
             match result {
                 Ok(ResultValue::None) => {
                     programm_counter += 1;
-                },
+                }
                 Ok(ResultValue::Object(value)) => {
                     stack.push(value);
                     programm_counter += 1;
-                },
+                }
                 Ok(ResultValue::Return) => {
                     return Ok(Ok(None));
-                },
+                }
                 Ok(ResultValue::ReturnObject(return_value)) => {
                     return Ok(Ok(Some(return_value)));
                 }
@@ -82,7 +82,7 @@ impl Code {
                     };
                     programm_counter = handle_pc;
                     stack.clear();
-                },
+                }
             }
         }
     }
@@ -117,7 +117,6 @@ pub struct Locals {
 }
 
 impl Locals {
-
     pub fn new(size: usize) -> Self {
         let mut locals = Vec::with_capacity(size);
         let iter = std::iter::repeat_with(|| None).take(size);
@@ -162,7 +161,3 @@ impl Locals {
         self.store(index + 1, Object::Padding)
     }
 }
-
-
-
-

@@ -1,7 +1,10 @@
 use crate::parser::classfile::opcode::{ArrayType, LookupSwitch, TableSwitch};
 use std::sync::Arc;
 
-use super::{Array, Class, Field, Instance, InterfaceMethod, InternalError, Method, Object, Exception, OpResult, ResultValue, Stack, ExecResult, Locals};
+use super::{
+    Array, Class, Exception, ExecResult, Field, InterfaceMethod, InternalError, Locals,
+    Method, Object, OpResult, ResultValue, Stack,
+};
 
 #[derive(Debug, Clone, Copy)]
 pub enum ConstantNumerical {
@@ -529,8 +532,8 @@ fn check_null<T>(nullable: Option<T>) -> Result<T, Exception> {
 macro_rules! check_type {
     ($pattern:pat, $expression:expr) => {
         let $pattern = $expression else {
-                            return Err(InternalError::WrongType);
-                        };
+                                    return Err(InternalError::WrongType);
+                                };
     };
 }
 
