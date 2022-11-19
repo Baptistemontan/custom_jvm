@@ -6,12 +6,15 @@ use std::{
 
 use parser::classfile::classfile::parse_class_file;
 
-pub mod parser;
+mod parser;
 mod runtime;
+mod runtime_types;
 
 fn main() {
     let start = Instant::now();
 
+    // let file = File::open("sample/Object.class").unwrap();
+    // let file = File::open("sample/System.class").unwrap();
     let file = File::open("sample/HelloWorld.class").unwrap();
 
     let buff_reader = BufReader::new(file);
@@ -22,7 +25,7 @@ fn main() {
 
     let elapsed = start.elapsed();
 
-    dbg!(class_file);
+    println!("{:#?}", class_file);
 
     println!("{:?}", elapsed);
 }
