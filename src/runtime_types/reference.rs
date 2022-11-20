@@ -4,22 +4,22 @@ use std::sync::Arc;
 use std::ops::Deref;
 
 #[derive(Debug, Clone)]
-pub struct Reference(Arc<InstanceInner>);
+pub struct Reference(Arc<RefInner>);
 
 #[derive(Debug)]
-pub struct InstanceInner {
+pub struct RefInner {
     class: Arc<Class>,
 }
 
 impl Deref for Reference {
-    type Target = InstanceInner;
+    type Target = RefInner;
 
     fn deref(&self) -> &Self::Target {
         &self.0
     }
 }
 
-impl InstanceInner {
+impl RefInner {
     pub fn get_class(&self) -> &Arc<Class> {
         &self.class
     }

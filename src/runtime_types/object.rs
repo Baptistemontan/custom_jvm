@@ -1,8 +1,6 @@
-use std::sync::Arc;
-
 use super::{Array, Reference};
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum Object {
     Reference(Option<Reference>),
     Int(i32),
