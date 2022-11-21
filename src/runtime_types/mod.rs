@@ -9,7 +9,7 @@ mod opcode;
 mod reference;
 
 #[cfg(test)]
-mod tests;
+mod test;
 
 use std::sync::PoisonError;
 
@@ -23,7 +23,7 @@ pub use object::*;
 pub use opcode::*;
 pub use reference::*;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum InternalError {
     EmptyStack,
     WrongType,

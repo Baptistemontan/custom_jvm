@@ -33,12 +33,17 @@ impl ExceptionTableInfo {
 
 #[derive(Debug, Clone)]
 pub struct ExceptionTable {
-    infos: Vec<ExceptionTableInfo>,
+    infos: Option<Vec<ExceptionTableInfo>>,
 }
 
 impl ExceptionTable {
+
+    pub fn new(infos: Option<Vec<ExceptionTableInfo>>) -> Self {
+        ExceptionTable { infos }
+    }
+
     fn get_jump(&self, current_pc: usize, exception_class: &Arc<Class>) -> Option<usize> {
-        self.infos
+        self.infos.as_ref()?
             .iter()
             .find_map(|info| info.does_handle(current_pc, exception_class))
     }
@@ -49,14 +54,24 @@ pub struct Code {
     max_stack: usize,
     max_locals: usize,
     opcodes: Vec<OpCode>,
+    args_count: usize,
     exception_table: ExceptionTable,
 }
 
 impl Code {
-    pub fn execute(&self) -> Result<Result<Option<Object>, Exception>, InternalError> {
-        let mut programm_counter = 0;
-        let mut locals = Locals::new(self.max_locals);
+
+    pub fn new(max_stack: usize, max_locals: usize, opcodes: Vec<OpCode>, args_count: usize, exception_table: ExceptionTable) -> Self {
+        Code { max_stack, max_locals, opcodes, args_count, exception_table }
+    }
+
+    fn create_locals(&self, stack: &mut Stack) -> Result<Locals, InternalError> {
+        Locals::from_stack(self.max_locals, self.args_count, stack)
+    }
+
+    pub fn execute(&self, caller_stack: &mut Stack) -> Result<Result<Option<Object>, Exception>, InternalError> {
+        let mut locals = self.create_locals(caller_stack)?;
         let mut stack = Stack::new(self.max_stack);
+        let mut programm_counter = 0;
         loop {
             let Some(opcode) = self.opcodes.get(programm_counter) else {
                 return Err(InternalError::InvalidProgrammCounter);
@@ -274,6 +289,18 @@ impl Locals {
         let iter = std::iter::repeat_with(|| None).take(size);
         locals.extend(iter);
         Locals { locals }
+    }
+
+    pub fn from_stack(max_size: usize, arg_count: usize, stack: &mut Stack) -> Result<Self, InternalError> {
+        let mut locals = Self::new(max_size);
+        for i in 0..arg_count {
+            let value = stack.pop_single()?;
+            let Some(place_to_store) = locals.locals.get_mut(i) else {
+                return Err(InternalError::LocalsOutOfBounds);
+            };
+            *place_to_store = Some(value);
+        }
+        Ok(locals)
     }
 
     pub fn load(&self, index: usize) -> Result<Option<Object>, InternalError> {
