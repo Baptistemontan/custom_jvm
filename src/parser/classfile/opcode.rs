@@ -1,9 +1,12 @@
 use std::{cell::RefCell, collections::HashMap, sync::Arc};
 
-use crate::{parser::utils::{
-    self, pop1, pop4, pop_u1_as_index, pop_u2_as_index, pop_u2_as_offset, pop_u4_as_index,
-    pop_u4_as_offset, skip_n, FileByte, ParseError,
-}, runtime_types::Class};
+use crate::{
+    parser::utils::{
+        self, pop1, pop4, pop_u1_as_index, pop_u2_as_index, pop_u2_as_offset, pop_u4_as_index,
+        pop_u4_as_offset, skip_n, FileByte, ParseError,
+    },
+    runtime_types::Class,
+};
 
 #[derive(Debug, Clone)]
 pub enum ArrayType {
@@ -16,7 +19,7 @@ pub enum ArrayType {
     Int,
     Long,
     // anewarray transform to newarray with ArrayType = Reference
-    Reference(Arc<Class>)
+    Reference(Arc<Class>),
 }
 
 impl TryFrom<u8> for ArrayType {
@@ -774,9 +777,10 @@ impl LookupSwitch {
         // could do a binary search, but probably will not be that much efficient and doesn't look as good
         // [T]::binary_search return an index, and I would really preferred a reference
 
-        self.pairs.iter().find_map(|pair| {
-            (pair.value == value).then_some(pair.jump)
-        }).unwrap_or(self.default)
+        self.pairs
+            .iter()
+            .find_map(|pair| (pair.value == value).then_some(pair.jump))
+            .unwrap_or(self.default)
     }
 }
 

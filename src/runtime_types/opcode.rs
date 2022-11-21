@@ -1,11 +1,9 @@
 use crate::parser::classfile::opcode::{ArrayType, LookupSwitch, TableSwitch};
 use std::sync::Arc;
 
-
-
 use super::{
-    Array, Class, Exception, ExecResult, Field, InterfaceMethod, InternalError, Locals,
-    Method, Object, OpResult, ResultValue, Stack,
+    Array, Class, Exception, ExecResult, Field, InterfaceMethod, InternalError, Locals, Method,
+    Object, OpResult, ResultValue, Stack,
 };
 
 #[derive(Debug, Clone, Copy)]
@@ -310,7 +308,8 @@ impl OpCode {
 }
 
 fn exec_stack_op<F>(stack: &mut Stack, stack_fn: F) -> ExecResult
-    where F :FnOnce(&mut Stack) -> Result<(), InternalError>
+where
+    F: FnOnce(&mut Stack) -> Result<(), InternalError>,
 {
     stack_fn(stack).map(|_| ResultValue::None).map(Ok)
 }
@@ -578,8 +577,6 @@ pub fn exec_lcmp(stack: &mut Stack) -> ExecResult {
     };
     Ok(Ok(ResultValue::Object(Object::Int(value))))
 }
-
-
 
 fn exec_numerical_neg(stack: &mut Stack) -> ExecResult {
     let num = stack.pop()?;

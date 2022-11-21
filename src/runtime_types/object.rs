@@ -9,7 +9,7 @@ pub enum Object {
     Double(f64),
     Array(Option<Array>),
     Padding,
-    ReturnAdress(usize)
+    ReturnAdress(usize),
 }
 
 impl Object {

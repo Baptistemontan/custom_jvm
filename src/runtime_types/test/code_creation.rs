@@ -5,14 +5,9 @@ pub fn basic_add_function() -> Code {
     let max_locals = 2;
     let args_count = 2;
     let exception_table = ExceptionTable::new(None);
-    
+
     use OpCode::*;
-    let opcodes = vec![
-        load_0,
-        load_1,
-        add,
-        return_v
-    ];
+    let opcodes = vec![load_0, load_1, add, return_v];
 
     Code::new(max_stack, max_locals, opcodes, args_count, exception_table)
 }
@@ -47,7 +42,7 @@ pub fn fibonacci_calculator() -> Code {
     let max_locals = 5;
     let args_count = 1;
     let exception_table = ExceptionTable::new(None);
-    
+
     use OpCode::*;
     let opcodes = vec![
         iconst_0,
@@ -67,10 +62,13 @@ pub fn fibonacci_calculator() -> Code {
         store_1,
         load_i { local_index: 4 },
         store_2,
-        iinc { local_index: 3, delta: 1 },
+        iinc {
+            local_index: 3,
+            delta: 1,
+        },
         goto(6),
         load_1, // 19
-        return_v
+        return_v,
     ];
 
     Code::new(max_stack, max_locals, opcodes, args_count, exception_table)

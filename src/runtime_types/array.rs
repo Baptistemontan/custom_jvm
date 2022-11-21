@@ -5,7 +5,7 @@ use std::{
 
 use crate::{parser::classfile::opcode::ArrayType, rethrow_exception};
 
-use super::{Class, InternalError, Reference, ExecResult, Exception, Object, ResultValue};
+use super::{Class, Exception, ExecResult, InternalError, Object, Reference, ResultValue};
 
 #[derive(Debug, Clone)]
 pub enum Array {
@@ -32,7 +32,7 @@ impl PartialEq for Array {
             (Array::Int(array_1), Array::Int(array_2)) => Arc::ptr_eq(array_1, array_2),
             (Array::Long(array_1), Array::Long(array_2)) => Arc::ptr_eq(array_1, array_2),
             (Array::Reference(array_1), Array::Reference(array_2)) => Arc::ptr_eq(array_1, array_2),
-            _ => false
+            _ => false,
         }
     }
 }
@@ -91,8 +91,8 @@ fn get_index_raw<T: Clone>(
 fn store_index_raw<T>(
     array: &Mutex<Box<[T]>>,
     index: usize,
-    value: T
-)-> Result<Result<(), ()>, InternalError> {
+    value: T,
+) -> Result<Result<(), ()>, InternalError> {
     let mut array = array.lock()?;
     if let Some(place_to_store) = array.get_mut(index) {
         *place_to_store = value;
@@ -112,7 +112,10 @@ fn store_index<T>(array: &Mutex<Box<[T]>>, index: i32, value: T) -> ExecResult {
     todo!()
 }
 
-fn get_index<T: Clone>(array: &Mutex<Box<[T]>>, index: i32) -> Result<Result<T, Exception>, InternalError> {
+fn get_index<T: Clone>(
+    array: &Mutex<Box<[T]>>,
+    index: i32,
+) -> Result<Result<T, Exception>, InternalError> {
     if index >= 0 {
         if let Some(elem) = get_index_raw(array, index as usize)? {
             return Ok(Ok(elem));
@@ -162,40 +165,40 @@ impl Array {
         let value = match self {
             Array::Boolean(array) => {
                 let value = rethrow_exception!(get_index(array, index)?);
-                Object::Int(value as i32)   
-            },
+                Object::Int(value as i32)
+            }
             Array::Char(array) => {
                 let value = rethrow_exception!(get_index(array, index)?);
                 Object::Int(value as i32)
-            },
+            }
             Array::Float(array) => {
                 let value = rethrow_exception!(get_index(array, index)?);
                 Object::Float(value)
-            },
+            }
             Array::Double(array) => {
                 let value = rethrow_exception!(get_index(array, index)?);
                 Object::Double(value)
-            },
+            }
             Array::Byte(array) => {
                 let value = rethrow_exception!(get_index(array, index)?);
                 Object::Int(value as i32)
-            },
+            }
             Array::Short(array) => {
                 let value = rethrow_exception!(get_index(array, index)?);
                 Object::Int(value as i32)
-            },
+            }
             Array::Int(array) => {
                 let value = rethrow_exception!(get_index(array, index)?);
                 Object::Int(value)
-            },
+            }
             Array::Long(array) => {
                 let value = rethrow_exception!(get_index(array, index)?);
                 Object::Long(value)
-            },
+            }
             Array::Reference(array) => {
                 let value = rethrow_exception!(get_index(array, index)?);
                 Object::Reference(value)
-            },
+            }
         };
         Ok(Ok(ResultValue::Object(value)))
     }
@@ -205,28 +208,14 @@ impl Array {
             (Array::Boolean(array), Object::Int(value)) => {
                 let value = if value % 2 == 0 { false } else { true };
                 store_index(array, index, value)
-            },
-            (Array::Char(array), Object::Int(value)) => {
-                store_index(array, index, value as u8)
-            },
-            (Array::Float(array), Object::Float(value)) => {
-                store_index(array, index, value)
-            },
-            (Array::Double(array), Object::Double(value)) => {
-                store_index(array, index, value)
-            },
-            (Array::Byte(array), Object::Int(value)) => {
-                store_index(array, index, value as u8)
-            },
-            (Array::Short(array), Object::Int(value)) => {
-                store_index(array, index, value as i16)
-            },
-            (Array::Int(array), Object::Int(value)) => {
-                store_index(array, index, value)
-            },
-            (Array::Long(array), Object::Long(value)) => {
-                store_index(array, index, value)
-            },
+            }
+            (Array::Char(array), Object::Int(value)) => store_index(array, index, value as u8),
+            (Array::Float(array), Object::Float(value)) => store_index(array, index, value),
+            (Array::Double(array), Object::Double(value)) => store_index(array, index, value),
+            (Array::Byte(array), Object::Int(value)) => store_index(array, index, value as u8),
+            (Array::Short(array), Object::Int(value)) => store_index(array, index, value as i16),
+            (Array::Int(array), Object::Int(value)) => store_index(array, index, value),
+            (Array::Long(array), Object::Long(value)) => store_index(array, index, value),
             (Array::Reference(array), Object::Reference(reference)) => {
                 if let Some(reference) = &reference {
                     if !array.can_accept(reference) {
@@ -235,8 +224,8 @@ impl Array {
                     }
                 }
                 store_index(array, index, reference)
-            },
-            _ => Err(InternalError::WrongType)
+            }
+            _ => Err(InternalError::WrongType),
         }
     }
 }

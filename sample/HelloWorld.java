@@ -21,6 +21,11 @@ class HelloWorld
         return a;
     }
 
+    public static int[] test(int size) {
+        int[] arr = new int[size];
+        return arr;
+    }
+
     public static void main(String[] args)
     {
     	System.out.println("Hello, World.");

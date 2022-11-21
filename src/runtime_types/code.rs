@@ -37,13 +37,13 @@ pub struct ExceptionTable {
 }
 
 impl ExceptionTable {
-
     pub fn new(infos: Option<Vec<ExceptionTableInfo>>) -> Self {
         ExceptionTable { infos }
     }
 
     fn get_jump(&self, current_pc: usize, exception_class: &Arc<Class>) -> Option<usize> {
-        self.infos.as_ref()?
+        self.infos
+            .as_ref()?
             .iter()
             .find_map(|info| info.does_handle(current_pc, exception_class))
     }
@@ -58,17 +58,30 @@ pub struct Code {
     exception_table: ExceptionTable,
 }
 
-impl Code {
+pub type MethodCallResult = Result<Result<Option<Object>, Exception>, InternalError>;
 
-    pub fn new(max_stack: usize, max_locals: usize, opcodes: Vec<OpCode>, args_count: usize, exception_table: ExceptionTable) -> Self {
-        Code { max_stack, max_locals, opcodes, args_count, exception_table }
+impl Code {
+    pub fn new(
+        max_stack: usize,
+        max_locals: usize,
+        opcodes: Vec<OpCode>,
+        args_count: usize,
+        exception_table: ExceptionTable,
+    ) -> Self {
+        Code {
+            max_stack,
+            max_locals,
+            opcodes,
+            args_count,
+            exception_table,
+        }
     }
 
     fn create_locals(&self, stack: &mut Stack) -> Result<Locals, InternalError> {
         Locals::from_stack(self.max_locals, self.args_count, stack)
     }
 
-    pub fn execute(&self, caller_stack: &mut Stack) -> Result<Result<Option<Object>, Exception>, InternalError> {
+    pub fn execute(&self, caller_stack: &mut Stack) -> MethodCallResult {
         let mut locals = self.create_locals(caller_stack)?;
         let mut stack = Stack::new(self.max_stack);
         let mut programm_counter = 0;
@@ -291,7 +304,11 @@ impl Locals {
         Locals { locals }
     }
 
-    pub fn from_stack(max_size: usize, arg_count: usize, stack: &mut Stack) -> Result<Self, InternalError> {
+    pub fn from_stack(
+        max_size: usize,
+        arg_count: usize,
+        stack: &mut Stack,
+    ) -> Result<Self, InternalError> {
         let mut locals = Self::new(max_size);
         for i in 0..arg_count {
             let value = stack.pop_single()?;

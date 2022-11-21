@@ -1,4 +1,4 @@
-use super::{Stack, Object};
+use super::{Object, Stack};
 
 mod code_creation;
 
@@ -30,7 +30,7 @@ fn test_fibonacci() {
         }
         a
     }
-    
+
     let code = fibonacci_calculator();
     let mut stack = Stack::new(1);
     let n = 30;
