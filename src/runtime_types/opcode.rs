@@ -616,8 +616,8 @@ fn exec_if_acmpne(stack: &mut Stack, jump: usize) -> ExecResult {
 macro_rules! impl_icmp {
     ($(($fn_name:ident, $cmp_op:tt)), +) => {
         $(fn $fn_name(stack: &mut Stack, jump: usize) -> ExecResult {
-            let i_1 = pop_stack_typechecked!(Object::Int, stack);
             let i_2 = pop_stack_typechecked!(Object::Int, stack);
+            let i_1 = pop_stack_typechecked!(Object::Int, stack);
             if i_1 $cmp_op i_2 {
                 Ok(Ok(ResultValue::Jump(jump)))
             } else {
