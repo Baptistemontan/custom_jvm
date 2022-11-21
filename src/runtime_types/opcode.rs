@@ -17,8 +17,8 @@ pub enum ConstantNumerical {
 #[derive(Debug, Clone)]
 #[allow(non_camel_case_types)]
 pub enum OpCode {
-    aaload,
-    aastore,
+    aload,
+    astore,
     aconst_null,
     load_i {
         local_index: usize,
@@ -27,9 +27,6 @@ pub enum OpCode {
     load_1,
     load_2,
     load_3,
-    anewarray {
-        item_class: Arc<Class>,
-    },
     return_v,
     arraylength,
     store_i {
@@ -40,11 +37,7 @@ pub enum OpCode {
     store_2,
     store_3,
     athrow,
-    baload,
-    bastore,
     bipush(i32),
-    caload,
-    castore,
     checkcast {
         class: Arc<Class>,
     },
@@ -52,8 +45,6 @@ pub enum OpCode {
     d2i,
     d2l,
     add,
-    daload,
-    dastore,
     dcmpg,
     dcmpl,
     dconst_0,
@@ -72,8 +63,6 @@ pub enum OpCode {
     f2d,
     f2i,
     f2l,
-    faload,
-    fastore,
     fcmpg,
     fcmpl,
     fconst_0,
@@ -93,8 +82,6 @@ pub enum OpCode {
     i2f,
     i2l,
     i2s,
-    iaload,
-    iastore,
     iconst_m1,
     iconst_0,
     iconst_1,
@@ -144,15 +131,13 @@ pub enum OpCode {
     or,
     shl,
     shr,
-    ushr,
+    iushr,
+    lushr,
     xor,
     jsr(usize),
-    jsr_w(usize),
     l2d,
     l2f,
     l2i,
-    laload,
-    lastore,
     lcmp,
     lconst_0,
     lconst_1,
@@ -179,14 +164,12 @@ pub enum OpCode {
         field_name: String,
     },
     putstatic {
-        field: Arc<Field>,
+        field: Arc<Field>, // Arc ?
     },
     ret {
         local_index: usize,
     },
     retrn,
-    saload,
-    sastore,
     sipush(i32),
     swap,
     tableswitch(TableSwitch),
@@ -198,15 +181,14 @@ impl OpCode {
     pub fn execute(&self, locals: &mut Locals, stack: &mut Stack) -> ExecResult {
         use OpCode::*;
         match self {
-            aaload => exec_aload(stack),
-            aastore => exec_astore(stack),
+            aload => exec_aload(stack),
+            astore => exec_astore(stack),
             aconst_null => Ok(Ok(ResultValue::Object(Object::Reference(None)))), // yep that's a long wrapping for null
             load_i { local_index } => exec_load_local(locals, *local_index),
             load_0 => exec_load_local(locals, 0),
             load_1 => exec_load_local(locals, 1),
             load_2 => exec_load_local(locals, 2),
             load_3 => exec_load_local(locals, 3),
-            anewarray { item_class } => exec_anewarray(stack, item_class),
             arraylength => exec_arraylength(stack),
             store_i { local_index } => exec_store_local(locals, stack, *local_index),
             store_0 => exec_store_local(locals, stack, 0),
@@ -214,18 +196,12 @@ impl OpCode {
             store_2 => exec_store_local(locals, stack, 2),
             store_3 => exec_store_local(locals, stack, 3),
             athrow => exec_athrow(stack),
-            baload => exec_aload(stack),
-            bastore => exec_astore(stack),
             bipush(value) => Ok(Ok(ResultValue::Object(Object::Int(*value)))),
-            caload => exec_aload(stack),
-            castore => exec_astore(stack),
             checkcast { class } => exec_checkcast(stack, class),
             d2f => exec_d2f(stack),
             d2i => exec_d2i(stack),
             d2l => exec_d2l(stack),
             add => exec_add(stack),
-            daload => exec_aload(stack),
-            dastore => exec_astore(stack),
             dcmpg => exec_dcmpg(stack),
             dcmpl => exec_dcmpl(stack),
             dconst_0 => Ok(Ok(ResultValue::Object(Object::Double(0.0)))),
@@ -243,8 +219,6 @@ impl OpCode {
             f2d => exec_f2d(stack),
             f2i => exec_f2i(stack),
             f2l => exec_f2l(stack),
-            faload => exec_aload(stack),
-            fastore => exec_astore(stack),
             fcmpg => exec_fcmpg(stack),
             fcmpl => exec_fcmpl(stack),
             fconst_0 => Ok(Ok(ResultValue::Object(Object::Float(0.0)))),
@@ -260,8 +234,6 @@ impl OpCode {
             i2f => exec_i2f(stack),
             i2l => exec_i2l(stack),
             i2s => exec_i2s(stack),
-            iaload => exec_aload(stack),
-            iastore => exec_astore(stack),
             iconst_m1 => Ok(Ok(ResultValue::Object(Object::Int(-1)))),
             iconst_0 => Ok(Ok(ResultValue::Object(Object::Int(0)))),
             iconst_1 => Ok(Ok(ResultValue::Object(Object::Int(1)))),
@@ -300,22 +272,20 @@ impl OpCode {
             or => exec_or(stack),
             shl => exec_shl(stack),
             shr => exec_shr(stack),
-            ushr => todo!(),
+            iushr => todo!(),
+            lushr => todo!(),
             xor => exec_xor(stack),
-            jsr(_) => todo!(),
-            jsr_w(_) => todo!(),
+            jsr(jump) => Ok(Ok(ResultValue::Object(Object::ReturnAdress(*jump)))),
             l2d => exec_l2d(stack),
             l2f => exec_l2f(stack),
             l2i => exec_l2i(stack),
-            laload => todo!(),
-            lastore => todo!(),
             lcmp => exec_lcmp(stack),
             lconst_0 => Ok(Ok(ResultValue::Object(Object::Long(0)))),
             lconst_1 => Ok(Ok(ResultValue::Object(Object::Long(1)))),
             ldc(_) => todo!(),
             ldc_w(_) => todo!(),
             ldc2_w(_) => todo!(),
-            lookupswitch(_) => todo!(),
+            lookupswitch(lookup_switch) => exec_lookupswitch(stack, lookup_switch),
             monitorenter => todo!(),
             monitorexit => todo!(),
             multinewarray {
@@ -323,20 +293,18 @@ impl OpCode {
                 dimensions,
             } => todo!(),
             new { class } => todo!(),
-            newarray(_) => todo!(),
-            nop => todo!(),
-            pop => todo!(),
-            pop2 => todo!(),
+            newarray(array_type) => exec_newarray(stack, array_type),
+            nop => Ok(Ok(ResultValue::None)), // easiest opcode lol
+            pop => exec_pop(stack, false),
+            pop2 => exec_pop(stack, true),
             putfield { field_name } => todo!(),
             putstatic { field } => todo!(),
-            ret { local_index } => todo!(),
-            retrn => todo!(),
-            saload => todo!(),
-            sastore => todo!(),
-            sipush(_) => todo!(),
-            swap => todo!(),
-            tableswitch(_) => todo!(),
-            return_v => todo!(),
+            ret { local_index } => exec_ret(locals, *local_index),
+            retrn => Ok(Ok(ResultValue::Return)),
+            sipush(value) => Ok(Ok(ResultValue::Object(Object::Int(*value)))),
+            swap => exec_stack_op(stack, Stack::swap),
+            tableswitch(table_switch) => exec_tableswitc(stack, table_switch),
+            return_v => exec_return_with_value(stack),
         }
     }
 }
@@ -449,10 +417,10 @@ fn exec_load_local(locals: &Locals, index: usize) -> ExecResult {
         .map(Ok)
 }
 
-fn exec_anewarray(stack: &mut Stack, class: &Arc<Class>) -> ExecResult {
+fn exec_newarray(stack: &mut Stack, array_type: &ArrayType) -> ExecResult {
     let size = pop_stack_typechecked!(Object::Int, stack);
     let size = rethrow_exception!(check_negative_array_size(size));
-    let array = Array::new_reference(class.clone(), size);
+    let array = Array::new(array_type, size);
     Ok(Ok(ResultValue::Object(Object::Array(Some(array)))))
 }
 
@@ -727,4 +695,30 @@ fn exec_instanceof(stack: &mut Stack, class: &Arc<Class>) -> ExecResult {
         0
     };
     Ok(Ok(ResultValue::Object(Object::Int(value))))
+}
+
+fn exec_lookupswitch(stack: &mut Stack, lookup_switch: &LookupSwitch) -> ExecResult {
+    let value = pop_stack_typechecked!(Object::Int, stack);
+    let jump = lookup_switch.find_jump(value);
+    Ok(Ok(ResultValue::Jump(jump)))
+}
+
+fn exec_pop(stack: &mut Stack, pop2: bool) -> ExecResult {
+    let value = stack.pop()?;
+    if pop2 && !value.is_wide() {
+        stack.pop()?;
+    }
+    Ok(Ok(ResultValue::None))
+}
+
+fn exec_ret(locals: &Locals, index: usize) -> ExecResult {
+    let value = locals.load_non_empty(index)?;
+    let ret_adress = check_type!(Object::ReturnAdress, value);
+    Ok(Ok(ResultValue::Jump(ret_adress)))
+}
+
+fn exec_tableswitc(stack: &mut Stack, table_switch: &TableSwitch) -> ExecResult {
+    let index = pop_stack_typechecked!(Object::Int, stack);
+    let jump_adress = table_switch.find_jump(index);
+    Ok(Ok(ResultValue::Jump(jump_adress)))
 }

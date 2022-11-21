@@ -9,6 +9,7 @@ pub enum Object {
     Double(f64),
     Array(Option<Array>),
     Padding,
+    ReturnAdress(usize)
 }
 
 impl Object {

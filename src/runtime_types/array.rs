@@ -130,7 +130,7 @@ impl Array {
         }))
     }
 
-    pub fn new_numerical(array_type: ArrayType, size: usize) -> Self {
+    pub fn new(array_type: &ArrayType, size: usize) -> Self {
         match array_type {
             ArrayType::Boolean => Array::Boolean(Arc::new(Mutex::new(new_boxed_array(size)))),
             ArrayType::Char => Array::Char(Arc::new(Mutex::new(new_boxed_array(size)))),
@@ -140,6 +140,7 @@ impl Array {
             ArrayType::Short => Array::Short(Arc::new(Mutex::new(new_boxed_array(size)))),
             ArrayType::Int => Array::Int(Arc::new(Mutex::new(new_boxed_array(size)))),
             ArrayType::Long => Array::Long(Arc::new(Mutex::new(new_boxed_array(size)))),
+            ArrayType::Reference(class) => Self::new_reference(class.clone(), size),
         }
     }
 

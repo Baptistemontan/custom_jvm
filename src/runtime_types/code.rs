@@ -244,6 +244,13 @@ impl Stack {
         Ok(())
     }
 
+    pub fn swap(&mut self) -> Result<(), InternalError> {
+        let top = self.pop_single()?;
+        let second = self.pop_single()?;
+        self.stack.extend([top, second]);
+        Ok(())
+    }
+
     pub fn push(&mut self, value: Object) {
         let is_wide = value.is_wide();
         self.stack.push(value);

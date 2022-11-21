@@ -1,11 +1,11 @@
-use std::{cell::RefCell, collections::HashMap};
+use std::{cell::RefCell, collections::HashMap, sync::Arc};
 
-use crate::parser::utils::{
+use crate::{parser::utils::{
     self, pop1, pop4, pop_u1_as_index, pop_u2_as_index, pop_u2_as_offset, pop_u4_as_index,
     pop_u4_as_offset, skip_n, FileByte, ParseError,
-};
+}, runtime_types::Class};
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone)]
 pub enum ArrayType {
     Boolean,
     Char,
@@ -15,6 +15,8 @@ pub enum ArrayType {
     Short,
     Int,
     Long,
+    // anewarray transform to newarray with ArrayType = Reference
+    Reference(Arc<Class>)
 }
 
 impl TryFrom<u8> for ArrayType {
@@ -767,6 +769,17 @@ pub struct LookupSwitch {
     pairs: Vec<LookupSwitchPair>,
 }
 
+impl LookupSwitch {
+    pub fn find_jump(&self, value: i32) -> usize {
+        // could do a binary search, but probably will not be that much efficient and doesn't look as good
+        // [T]::binary_search return an index, and I would really preferred a reference
+
+        self.pairs.iter().find_map(|pair| {
+            (pair.value == value).then_some(pair.jump)
+        }).unwrap_or(self.default)
+    }
+}
+
 #[derive(Debug, Clone)]
 pub struct LookupSwitchPair {
     value: i32,
@@ -825,9 +838,22 @@ fn correct_lookupswitch_jumps(
 #[derive(Debug, Clone)]
 pub struct TableSwitch {
     default: usize,
-    low: i32,
-    high: i32,
+    offset: i32,
     jumps: Vec<usize>,
+}
+
+impl TableSwitch {
+    fn get_jump_index(&self, index: i32) -> Option<usize> {
+        if index < 0 {
+            None
+        } else {
+            self.jumps.get(index as usize).copied()
+        }
+    }
+    pub fn find_jump(&self, index: i32) -> usize {
+        let index = index - self.offset;
+        self.get_jump_index(index).unwrap_or(self.default)
+    }
 }
 
 fn parse_tableswitch<I>(bytes: &mut I, current_line: usize) -> Result<TableSwitch, ParseError>
@@ -858,8 +884,7 @@ where
 
     Ok(TableSwitch {
         default,
-        low,
-        high,
+        offset: high - low,
         jumps,
     })
 }
